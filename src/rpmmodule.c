@@ -11,7 +11,6 @@
 #include <rpm/rpmlog.h>
 
 #include "header-py.h"
-#include "rpmal-py.h"
 #include "rpmds-py.h"
 #include "rpmfi-py.h"
 #include "rpmmi-py.h"
@@ -236,7 +235,6 @@ void init_rpmng(void)
     PyObject * m;
 
     if (PyType_Ready(&hdr_Type) < 0) return;
-    if (PyType_Ready(&rpmal_Type) < 0) return;
     if (PyType_Ready(&rpmds_Type) < 0) return;
     if (PyType_Ready(&rpmfi_Type) < 0) return;
     if (PyType_Ready(&rpmmi_Type) < 0) return;
@@ -272,9 +270,6 @@ void init_rpmng(void)
 
     Py_INCREF(&hdr_Type);
     PyModule_AddObject(m, "hdr", (PyObject *) &hdr_Type);
-
-    Py_INCREF(&rpmal_Type);
-    PyModule_AddObject(m, "al", (PyObject *) &rpmal_Type);
 
     Py_INCREF(&rpmds_Type);
     PyModule_AddObject(m, "ds", (PyObject *) &rpmds_Type);
