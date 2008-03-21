@@ -6,6 +6,7 @@
 
 #include "header-py.h"
 #include "rpmfi-py.h"
+#include "rpmdebug-py.h"
 
 static PyObject *
 rpmfi_FC(rpmfiObject * s)
@@ -301,8 +302,7 @@ static int rpmfi_init(rpmfiObject * s, PyObject *args, PyObject *kwds)
     int flags = 0;
     char * kwlist[] = {"header", "tag", "flags", NULL};
 
-if (_rpmfi_debug < 0)
-fprintf(stderr, "*** rpmfi_init(%p,%p,%p)\n", s, args, kwds);
+    debug("*** rpmfi_init(%p,%p,%p)\n", s, args, kwds);
 
     if (!PyArg_ParseTupleAndKeywords(args, kwds, "O!|Oi:rpmfi_init", kwlist,
 	    &hdr_Type, &ho, &to, &flags))
@@ -325,8 +325,7 @@ fprintf(stderr, "*** rpmfi_init(%p,%p,%p)\n", s, args, kwds);
  */
 static void rpmfi_free(rpmfiObject * s)
 {
-if (_rpmfi_debug)
-fprintf(stderr, "%p -- fi %p\n", s, s->fi);
+    debug("%p -- fi %p\n", s, s->fi);
     s->fi = rpmfiFree(s->fi);
 
     PyObject_Del((PyObject *)s);
@@ -344,8 +343,7 @@ static PyObject * rpmfi_new(PyTypeObject * subtype, PyObject *args, PyObject *kw
 	return NULL;
     }
 
-if (_rpmfi_debug)
-fprintf(stderr, "%p ++ fi %p\n", s, s->fi);
+    debug("%p ++ fi %p\n", s, s->fi);
 
     return (PyObject *)s;
 }

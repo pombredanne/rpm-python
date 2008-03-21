@@ -8,6 +8,7 @@
 
 #include "header-py.h"
 #include "rpmds-py.h"
+#include "rpmdebug-py.h"
 
 /**
  * Split EVR into epoch, version, and release components.
@@ -427,8 +428,7 @@ static int rpmds_init(rpmdsObject * s, PyObject *args, PyObject *kwds)
     rpmsenseFlags flags = 0;
     char * kwlist[] = {"header", "tag", "flags", NULL};
 
-if (_rpmds_debug < 0)
-fprintf(stderr, "*** rpmds_init(%p,%p,%p)\n", s, args, kwds);
+    debug("*** rpmds_init(%p,%p,%p)\n", s, args, kwds);
 
     if (!PyArg_ParseTupleAndKeywords(args, kwds, "O!|Oi:rpmds_init", kwlist, 
 	    &hdr_Type, &ho, &to, &flags))
@@ -451,8 +451,7 @@ fprintf(stderr, "*** rpmds_init(%p,%p,%p)\n", s, args, kwds);
  */
 static void rpmds_free(rpmdsObject * s)
 {
-if (_rpmds_debug)
-fprintf(stderr, "%p -- ds %p\n", s, s->ds);
+    debug("%p -- ds %p\n", s, s->ds);
     s->ds = rpmdsFree(s->ds);
 
     PyObject_Del((PyObject *)s);
@@ -470,8 +469,7 @@ static PyObject * rpmds_new(PyTypeObject * subtype, PyObject *args, PyObject *kw
 	return NULL;
     }
 
-if (_rpmds_debug)
-fprintf(stderr, "%p ++ ds %p\n", s, s->ds);
+    debug("%p ++ ds %p\n", s, s->ds);
 
     return (PyObject *)s;
 }

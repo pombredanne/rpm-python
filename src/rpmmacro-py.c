@@ -8,6 +8,7 @@
 #include <rpm/rpmmacro.h>
 
 #include "rpmmacro-py.h"
+#include "rpmdebug-py.h"
 
 /**
  */

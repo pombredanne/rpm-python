@@ -6,6 +6,7 @@
 
 #include "rpmmi-py.h"
 #include "header-py.h"
+#include "rpmdebug-py.h"
 
 /** \ingroup python
  * \class Rpmmi

@@ -18,6 +18,7 @@
 #include "rpmmacro-py.h"
 #include "rpmte-py.h"
 #include "rpmts-py.h"
+#include "rpmdebug-py.h"
 
 /** \ingroup python
  * \name Module: rpm

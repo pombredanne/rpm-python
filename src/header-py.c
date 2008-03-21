@@ -10,6 +10,7 @@
 #include "header-py.h"
 #include "rpmds-py.h"
 #include "rpmfi-py.h"
+#include "rpmdebug-py.h"
 
 /** \ingroup python
  * \class Rpm
