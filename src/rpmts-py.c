@@ -1248,11 +1248,6 @@ fprintf(stderr, "%p -- ts %p db %p\n", s, s->ts, rpmtsGetRdb(s->ts));
     PyObject_Del((PyObject *)s);
 }
 
-static PyObject * rpmts_getattro(PyObject * o, PyObject * n)
-{
-    return PyObject_GenericGetAttr(o, n);
-}
-
 /** \ingroup py_c
  */
 static int rpmts_setattro(PyObject * o, PyObject * n, PyObject * v)
@@ -1302,17 +1297,6 @@ fprintf(stderr, "%p -- ts %p db %p\n", s, s->ts, rpmtsGetRdb(s->ts));
     Py_DECREF(s->keyList);
 
     PyObject_Del((PyObject *)s);
-}
-
-/** \ingroup py_c
- */
-static PyObject * rpmts_alloc(PyTypeObject * subtype, int nitems)
-{
-    PyObject * s = PyType_GenericAlloc(subtype, nitems);
-
-if (_rpmts_debug < 0)
-fprintf(stderr, "*** rpmts_alloc(%p,%d) ret %p\n", subtype, nitems, s);
-    return s;
 }
 
 /** \ingroup py_c
@@ -1374,7 +1358,7 @@ PyTypeObject rpmts_Type = {
 	0,				/* tp_hash */
 	0,				/* tp_call */
 	0,				/* tp_str */
-	(getattrofunc) rpmts_getattro, 	/* tp_getattro */
+	PyObject_GenericGetAttr,, 	/* tp_getattro */
 	(setattrofunc) rpmts_setattro,	/* tp_setattro */
 	0,				/* tp_as_buffer */
 	Py_TPFLAGS_DEFAULT, 		/* tp_flags */
@@ -1394,7 +1378,7 @@ PyTypeObject rpmts_Type = {
 	0,				/* tp_descr_set */
 	0,				/* tp_dictoffset */
 	(initproc) rpmts_init,		/* tp_init */
-	(allocfunc) rpmts_alloc,	/* tp_alloc */
+	(allocfunc)0,			/* tp_alloc */
 	(newfunc) rpmts_new,		/* tp_new */
 	(freefunc) rpmts_free,		/* tp_free */
 	0,				/* tp_is_gc */
