@@ -189,22 +189,6 @@ rpmfi_Next(rpmfiObject * s)
     return result;
 }
 
-#ifdef	NOTYET
-static PyObject *
-rpmfi_NextD(rpmfiObject * s)
-{
-	Py_INCREF(Py_None);
-	return Py_None;
-}
-
-static PyObject *
-rpmfi_InitD(rpmfiObject * s)
-{
-	Py_INCREF(Py_None);
-	return Py_None;
-}
-#endif
-
 static struct PyMethodDef rpmfiFile_methods[] = {
  {"BN",		(PyCFunction)rpmfiFile_BN,		METH_NOARGS,
 	NULL},
@@ -253,12 +237,6 @@ static struct PyMethodDef rpmfi_methods[] = {
  {"next",	(PyCFunction)rpmfi_Next,	METH_NOARGS,
 "fi.next() -> (FN, FSize, FMode, FMtime, FFlags, FRdev, FInode, FNlink, FState, VFlags, FUser, FGroup, FMD5))\n\
 - Retrieve next file info tuple.\n" },
-#ifdef	NOTYET
- {"NextD",	(PyCFunction)rpmfi_NextD,	METH_NOARGS,
-	NULL},
- {"InitD",	(PyCFunction)rpmfi_InitD,	METH_NOARGS,
-	NULL},
-#endif
  {NULL,		NULL}		/* sentinel */
 };
 
