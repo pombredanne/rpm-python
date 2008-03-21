@@ -9,14 +9,21 @@
  * \file python/rpmfi-py.h
  */
 
+typedef struct rpmfiFileObject_s {
+    PyObject_HEAD
+    rpmfi fi;
+} rpmfiFileObject;
+
 typedef struct rpmfiObject_s {
     PyObject_HEAD
     PyObject *md_dict;		/*!< to look like PyModuleObject */
-    int active;
+    rpmfiFileObject * cur;
     rpmfi fi;
 } rpmfiObject;
 
 extern PyTypeObject rpmfi_Type;
+
+extern PyTypeObject rpmfiFile_Type;
 
 rpmfi fiFromFi(rpmfiObject * fi);
 
