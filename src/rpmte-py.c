@@ -183,13 +183,8 @@ rpmte_DS(rpmteObject * s, PyObject * args, PyObject * kwds)
 
     ds = rpmteDS(s->te, tag);
     if (ds == NULL) {
-#ifdef	DYING
-	PyErr_SetString(PyExc_TypeError, "invalid ds tag");
-	return NULL;
-#else
 	Py_INCREF(Py_None);
 	return Py_None;
-#endif
     }
     return (PyObject *) rpmds_Wrap(rpmdsLink(ds, "rpmte_DS"));
 }
@@ -213,13 +208,8 @@ rpmte_FI(rpmteObject * s, PyObject * args, PyObject * kwds)
 
     fi = rpmteFI(s->te, tag);
     if (fi == NULL) {
-#ifdef	DYING
-	PyErr_SetString(PyExc_TypeError, "invalid fi tag");
-	return NULL;
-#else
 	Py_INCREF(Py_None);
 	return Py_None;
-#endif
     }
     return (PyObject *) rpmfi_Wrap(rpmfiLink(fi, "rpmte_FI"));
 }
