@@ -428,7 +428,7 @@ static int rpmds_init(rpmdsObject * s, PyObject *args, PyObject *kwds)
     rpmsenseFlags flags = 0;
     char * kwlist[] = {"header", "tag", "flags", NULL};
 
-    debug("*** rpmds_init(%p,%p,%p)\n", s, args, kwds);
+    debug("(%p,%p,%p)\n", s, args, kwds);
 
     if (!PyArg_ParseTupleAndKeywords(args, kwds, "O!|Oi:rpmds_init", kwlist, 
 	    &hdr_Type, &ho, &to, &flags))

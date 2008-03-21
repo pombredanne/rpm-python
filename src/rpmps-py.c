@@ -28,7 +28,7 @@ rpmps_append(rpmpsObject * s, PyObject * value)
 static PyObject *
 rpmps_iter(rpmpsObject * s)
 {
-    debug("*** rpmps_iter(%p)\n", s);
+    debug("(%p)\n", s);
     s->psi = rpmpsInitIterator(s->ps);
     Py_INCREF(s);
     return (PyObject *)s;
@@ -39,7 +39,7 @@ rpmps_iternext(rpmpsObject * s)
 {
     PyObject * result = NULL;
 
-    debug("*** rpmps_iternext(%p) ps %p psi %p\n", s, s->ps, s->psi);
+    debug("(%p) ps %p psi %p\n", s, s->ps, s->psi);
 
     /* Reset loop indices on 1st entry. */
     if (s->psi == NULL) {
@@ -68,7 +68,7 @@ static struct PyMethodDef rpmps_methods[] = {
 static void
 rpmps_dealloc(rpmpsObject * s)
 {
-    debug("*** rpmps_dealloc(%p)\n", s);
+    debug("(%p)\n", s);
     if (s) {
 	s->ps = rpmpsFree(s->ps);
 	PyObject_Del(s);
@@ -78,7 +78,7 @@ rpmps_dealloc(rpmpsObject * s)
 static int
 rpmps_print(rpmpsObject * s, FILE * fp, int flags)
 {
-    debug("*** rpmps_print(%p,%p,%x)\n", s, (void *)fp, flags);
+    debug("(%p,%p,%x)\n", s, (void *)fp, flags);
     if (s && s->ps)
 	rpmpsPrint(fp, s->ps);
     return 0;
@@ -89,7 +89,7 @@ rpmps_length(rpmpsObject * s)
 {
     int rc;
     rc = rpmpsNumProblems(s->ps);
-    debug("*** rpmps_length(%p) rc %d\n", s, rc);
+    debug("(%p) rc %d\n", s, rc);
     return rc;
 }
 
@@ -119,7 +119,7 @@ rpmps_subscript(rpmpsObject * s, PyObject * key)
     }
     psi = rpmpsFreeIterator(psi);
 
-    debug("*** rpmps_subscript(%p,%p) %s\n", s, key, PyString_AsString(result));
+    debug("(%p,%p) %s\n", s, key, PyString_AsString(result));
 
     return result;
 }
@@ -135,7 +135,7 @@ static int rpmps_init(rpmpsObject * s, PyObject *args, PyObject *kwds)
 {
     char * kwlist[] = {NULL};
 
-    debug("*** rpmps_init(%p,%p,%p)\n", s, args, kwds);
+    debug("(%p,%p,%p)\n", s, args, kwds);
 
     if (!PyArg_ParseTupleAndKeywords(args, kwds, ":rpmps_init", kwlist))
 	return -1;

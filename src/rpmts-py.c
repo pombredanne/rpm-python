@@ -170,7 +170,7 @@ rpmts_AddInstall(rpmtsObject * s, PyObject * args, PyObject * kwds)
 	}
     }
 
-    debug("*** rpmts_AddInstall(%p,%p,%p,%s) ts %p\n", s, h, key, how, s->ts);
+    debug("(%p,%p,%p,%s) ts %p\n", s, h, key, how, s->ts);
 
     if (how && strcmp(how, "a") && strcmp(how, "u") && strcmp(how, "i")) {
 	PyErr_SetString(PyExc_TypeError, "how argument must be \"u\", \"a\", or \"i\"");
@@ -204,7 +204,7 @@ rpmts_AddErase(rpmtsObject * s, PyObject * args, PyObject * kwds)
     rpmdbMatchIterator mi;
     char * kwlist[] = {"name", NULL};
 
-    debug("*** rpmts_AddErase(%p) ts %p\n", s, s->ts);
+    debug("(%p) ts %p\n", s, s->ts);
 
     if (!PyArg_ParseTupleAndKeywords(args, kwds, "O:AddErase", kwlist, &o))
         return NULL;
@@ -261,7 +261,7 @@ rpmts_SolveCallback(rpmts ts, rpmds ds, const void * data)
     PyObject * args, * result;
     int res = 1;
 
-    debug("*** rpmts_SolveCB(%p,%p,%p) \"%s\"\n", ts, ds, data, rpmdsDNEVR(ds));
+    debug("(%p,%p,%p) \"%s\"\n", ts, ds, data, rpmdsDNEVR(ds));
 
     if (cbInfo->tso == NULL) return res;
     if (cbInfo->pythonError) return res;
@@ -313,7 +313,7 @@ rpmts_Check(rpmtsObject * s, PyObject * args, PyObject * kwds)
 	xx = rpmtsSetSolveCallback(s->ts, rpmts_SolveCallback, (void *)&cbInfo);
     }
 
-    debug("*** rpmts_Check(%p) ts %p cb %p\n", s, s->ts, cbInfo.cb);
+    debug("(%p) ts %p cb %p\n", s, s->ts, cbInfo.cb);
 
     cbInfo.tso = s;
     cbInfo.pythonError = 0;
@@ -396,7 +396,7 @@ rpmts_Order(rpmtsObject * s)
 {
     int rc;
 
-    debug("*** rpmts_Order(%p) ts %p\n", s, s->ts);
+    debug("(%p) ts %p\n", s, s->ts);
 
     Py_BEGIN_ALLOW_THREADS
     rc = rpmtsOrder(s->ts);
@@ -410,7 +410,7 @@ rpmts_Order(rpmtsObject * s)
 static PyObject *
 rpmts_Clean(rpmtsObject * s)
 {
-    debug("*** rpmts_Clean(%p) ts %p\n", s, s->ts);
+    debug("(%p) ts %p\n", s, s->ts);
 
     rpmtsClean(s->ts);
 
@@ -425,7 +425,7 @@ rpmts_OpenDB(rpmtsObject * s)
 {
     int dbmode;
 
-    debug("*** rpmts_OpenDB(%p) ts %p\n", s, s->ts);
+    debug("(%p) ts %p\n", s, s->ts);
 
     dbmode = rpmtsGetDBMode(s->ts);
     if (dbmode == -1)
@@ -441,7 +441,7 @@ rpmts_CloseDB(rpmtsObject * s)
 {
     int rc;
 
-    debug("*** rpmts_CloseDB(%p) ts %p\n", s, s->ts);
+    debug("(%p) ts %p\n", s, s->ts);
 
     rc = rpmtsCloseDB(s->ts);
     rpmtsSetDBMode(s->ts, -1);	/* XXX disable lazy opens */
@@ -456,7 +456,7 @@ rpmts_InitDB(rpmtsObject * s)
 {
     int rc;
 
-    debug("*** rpmts_InitDB(%p) ts %p\n", s, s->ts);
+    debug("(%p) ts %p\n", s, s->ts);
 
     rc = rpmtsInitDB(s->ts, O_RDONLY);
     if (rc == 0)
@@ -472,7 +472,7 @@ rpmts_RebuildDB(rpmtsObject * s)
 {
     int rc;
 
-    debug("*** rpmts_RebuildDB(%p) ts %p\n", s, s->ts);
+    debug("(%p) ts %p\n", s, s->ts);
 
     Py_BEGIN_ALLOW_THREADS
     rc = rpmtsRebuildDB(s->ts);
@@ -488,7 +488,7 @@ rpmts_VerifyDB(rpmtsObject * s)
 {
     int rc;
 
-    debug("*** rpmts_VerifyDB(%p) ts %p\n", s, s->ts);
+    debug("(%p) ts %p\n", s, s->ts);
 
     Py_BEGIN_ALLOW_THREADS
     rc = rpmtsVerifyDB(s->ts);
@@ -517,7 +517,7 @@ rpmts_HdrFromFdno(rpmtsObject * s, PyObject * args, PyObject * kwds)
     rpmrc = rpmReadPackageFile(s->ts, fd, "rpmts_HdrFromFdno", &h);
     Fclose(fd);
 
-    debug("*** rpmts_HdrFromFdno(%p) ts %p rc %d\n", s, s->ts, rpmrc);
+    debug("(%p) ts %p rc %d\n", s, s->ts, rpmrc);
 
     switch (rpmrc) {
     case RPMRC_OK:
@@ -557,7 +557,7 @@ rpmts_HdrCheck(rpmtsObject * s, PyObject * args, PyObject * kwds)
     rpmRC rpmrc;
     char * kwlist[] = {"headers", NULL};
 
-    debug("*** rpmts_HdrCheck(%p) ts %p\n", s, s->ts);
+    debug("(%p) ts %p\n", s, s->ts);
 
     if (!PyArg_ParseTupleAndKeywords(args, kwds, "O:HdrCheck", kwlist, &blob))
     	return NULL;
@@ -607,7 +607,7 @@ rpmts_SetVSFlags(rpmtsObject * s, PyObject * args, PyObject * kwds)
     rpmVSFlags vsflags;
     char * kwlist[] = {"flags", NULL};
 
-    debug("*** rpmts_SetVSFlags(%p) ts %p\n", s, s->ts);
+    debug("(%p) ts %p\n", s, s->ts);
 
     if (!PyArg_ParseTupleAndKeywords(args, kwds, "i:SetVSFlags", kwlist,
 	    &vsflags))
@@ -635,7 +635,7 @@ rpmts_SetColor(rpmtsObject * s, PyObject * args, PyObject * kwds)
     rpm_color_t tscolor;
     char * kwlist[] = {"color", NULL};
 
-    debug("*** rpmts_SetColor(%p) ts %p\n", s, s->ts);
+    debug("(%p) ts %p\n", s, s->ts);
 
     if (!PyArg_ParseTupleAndKeywords(args, kwds, "i:Color", kwlist, &tscolor))
     	return NULL;
@@ -657,7 +657,7 @@ rpmts_PgpPrtPkts(rpmtsObject * s, PyObject * args, PyObject * kwds)
     int rc;
     char * kwlist[] = {"octets", NULL};
 
-    debug("*** rpmts_PgpPrtPkts(%p) ts %p\n", s, s->ts);
+    debug("(%p) ts %p\n", s, s->ts);
 
     if (!PyArg_ParseTupleAndKeywords(args, kwds, "O:PgpPrtPkts", kwlist, &blob))
     	return NULL;
@@ -689,7 +689,7 @@ rpmts_PgpImportPubkey(rpmtsObject * s, PyObject * args, PyObject * kwds)
     int rc;
     char * kwlist[] = {"pubkey", NULL};
 
-    debug("*** rpmts_PgpImportPubkey(%p) ts %p\n", s, s->ts);
+    debug("(%p) ts %p\n", s, s->ts);
 
     if (!PyArg_ParseTupleAndKeywords(args, kwds, "O:PgpImportPubkey",
     	    kwlist, &blob))
@@ -720,7 +720,7 @@ rpmts_GetKeys(rpmtsObject * s)
     int num, i;
     PyObject *tuple;
 
-    debug("*** rpmts_GetKeys(%p) ts %p\n", s, s->ts);
+    debug("(%p) ts %p\n", s, s->ts);
 
     rpmtsGetKeys(s->ts, &data, &num);
     if (data == NULL || num <= 0) {
@@ -830,7 +830,7 @@ rpmts_SetFlags(rpmtsObject * s, PyObject * args, PyObject * kwds)
 	    &transFlags))
 	return NULL;
 
-    debug("*** rpmts_SetFlags(%p) ts %p transFlags %x\n", s, s->ts, transFlags);
+    debug("(%p) ts %p transFlags %x\n", s, s->ts, transFlags);
 
     /* XXX FIXME: value check on flags, or build pure python object 
      * for it, and require an object of that type */
@@ -851,7 +851,7 @@ rpmts_SetProbFilter(rpmtsObject * s, PyObject * args, PyObject * kwds)
 	    &ignoreSet))
 	return NULL;
 
-    debug("*** rpmts_SetProbFilter(%p) ts %p ignoreSet %x\n", s, s->ts, ignoreSet);
+    debug("(%p) ts %p ignoreSet %x\n", s, s->ts, ignoreSet);
 
     oignoreSet = s->ignoreSet;
     s->ignoreSet = ignoreSet;
@@ -865,7 +865,7 @@ static rpmpsObject *
 rpmts_Problems(rpmtsObject * s)
 {
 
-    debug("*** rpmts_Problems(%p) ts %p\n", s, s->ts);
+    debug("(%p) ts %p\n", s, s->ts);
 
     return rpmps_Wrap( rpmtsProblems(s->ts) );
 }
@@ -898,7 +898,7 @@ rpmts_Run(rpmtsObject * s, PyObject * args, PyObject * kwds)
 	(void) rpmtsSetNotifyCallback(s->ts, rpmtsCallback, (void *) &cbInfo);
     }
 
-    debug("*** rpmts_Run(%p) ts %p ignore %x\n", s, s->ts, s->ignoreSet);
+    debug("(%p) ts %p ignore %x\n", s, s->ts, s->ignoreSet);
 
     rc = rpmtsRun(s->ts, NULL, s->ignoreSet);
     ps = rpmtsProblems(s->ts);
@@ -944,7 +944,7 @@ rpmts_Run(rpmtsObject * s, PyObject * args, PyObject * kwds)
 static PyObject *
 rpmts_iter(rpmtsObject * s)
 {
-    debug("*** rpmts_iter(%p) ts %p\n", s, s->ts);
+    debug("(%p) ts %p\n", s, s->ts);
 
     Py_INCREF(s);
     return (PyObject *)s;
@@ -959,7 +959,7 @@ rpmts_iternext(rpmtsObject * s)
     PyObject * result = NULL;
     rpmte te;
 
-    debug("*** rpmts_iternext(%p) ts %p tsi %p %d\n", s, s->ts, s->tsi, s->tsiFilter);
+    debug("(%p) ts %p tsi %p %d\n", s, s->ts, s->tsi, s->tsiFilter);
 
     /* Reset iterator on 1st entry. */
     if (s->tsi == NULL) {
@@ -988,7 +988,7 @@ rpmts_Next(rpmtsObject * s)
 {
     PyObject * result;
 
-    debug("*** rpmts_Next(%p) ts %p\n", s, s->ts);
+    debug("(%p) ts %p\n", s, s->ts);
 
     result = rpmts_iternext(s);
 
@@ -1015,7 +1015,7 @@ rpmts_Match(rpmtsObject * s, PyObject * args, PyObject * kwds)
     char * kwlist[] = {"tagNumber", "key", NULL};
     rpmdbMatchIterator mi = NULL;
 
-    debug("*** rpmts_Match(%p) ts %p\n", s, s->ts);
+    debug("(%p) ts %p\n", s, s->ts);
 
     if (!PyArg_ParseTupleAndKeywords(args, kwds, "|OO:Match", kwlist,
 	    &TagN, &Key))
@@ -1206,7 +1206,7 @@ static PyObject * rpmts_new(PyTypeObject * subtype, PyObject *args, PyObject *kw
     rpmVSFlags vsflags = rpmExpandNumeric("%{?__vsflags}");
     char * kwlist[] = {"rootdir", "vsflags", 0};
 
-    debug("*** rpmts_new(%p,%p,%p)\n", s, args, kwds);
+    debug("(%p,%p,%p)\n", s, args, kwds);
 
     if (!PyArg_ParseTupleAndKeywords(args, kwds, "|si:rpmts_init", kwlist,
 	    &rootDir, &vsflags))

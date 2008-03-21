@@ -302,7 +302,7 @@ static int rpmfi_init(rpmfiObject * s, PyObject *args, PyObject *kwds)
     int flags = 0;
     char * kwlist[] = {"header", "tag", "flags", NULL};
 
-    debug("*** rpmfi_init(%p,%p,%p)\n", s, args, kwds);
+    debug("(%p,%p,%p)\n", s, args, kwds);
 
     if (!PyArg_ParseTupleAndKeywords(args, kwds, "O!|Oi:rpmfi_init", kwlist,
 	    &hdr_Type, &ho, &to, &flags))
