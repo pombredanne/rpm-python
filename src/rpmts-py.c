@@ -150,32 +150,6 @@ struct rpmtsCallbackType_s {
     PyThreadState *_save;
 };
 
-#if 0
-/** \ingroup py_c
- * Add package to universe of possible packages to install in transaction set.
- * @param ts		transaction set
- * @param h		header
- * @param key		package private data
- */
-static void rpmtsAddAvailableElement(rpmts ts, Header h,
-		fnpyKey key)
-{
-    int scareMem = 0;
-    rpmds provides = rpmdsNew(h, RPMTAG_PROVIDENAME, scareMem);
-    rpmfi fi = rpmfiNew(ts, h, RPMTAG_BASENAMES, scareMem);
-
-    /* XXX FIXME: return code RPMAL_NOMATCH is error */
-    (void) rpmalAdd(&ts->availablePackages, RPMAL_NOMATCH, key,
-		provides, fi, rpmtsColor(ts));
-    fi = rpmfiFree(fi);
-    provides = rpmdsFree(provides);
-
-if (_rpmts_debug < 0)
-fprintf(stderr, "\tAddAvailable(%p) list %p\n", ts, ts->availablePackages);
-
-}
-#endif
-
 /** \ingroup py_c
  */
 static PyObject *
@@ -208,20 +182,7 @@ fprintf(stderr, "*** rpmts_AddInstall(%p,%p,%p,%s) ts %p\n", s, h, key, how, s->
     } else if (how && !strcmp(how, "u"))
     	isUpgrade = 1;
 
-    /*
-     * XXX resurrect when better available mechanism is, well, available.
-     * OTOH nothing appears to use it these days...
-     * Raise exception to catch out any callers while broken.
-     */
-    if (how && !strcmp(how, "a")) {
-#ifdef DYING
-	rpmtsAddAvailableElement(s->ts, hdrGetHeader(h), key); 
-#else
-	PyErr_SetString(pyrpmError, "available package mechanism currently broken");
-	return NULL;
-#endif
-    } else
-	rc = rpmtsAddInstallElement(s->ts, hdrGetHeader(h), key, isUpgrade, NULL);
+    rc = rpmtsAddInstallElement(s->ts, hdrGetHeader(h), key, isUpgrade, NULL);
     if (rc) {
 	PyErr_SetString(pyrpmError, "adding package to transaction failed");
 	return NULL;
@@ -364,11 +325,6 @@ fprintf(stderr, "*** rpmts_Check(%p) ts %p cb %p\n", s, s->ts, cbInfo.cb);
     cbInfo.tso = s;
     cbInfo.pythonError = 0;
     cbInfo._save = PyEval_SaveThread();
-
-#ifdef DYING
-    /* XXX resurrect availablePackages one more time ... */
-    rpmalMakeIndex(s->ts->availablePackages);
-#endif
 
     xx = rpmtsCheck(s->ts);
     ps = rpmtsProblems(s->ts);
