@@ -101,20 +101,6 @@ fprintf(stderr, "*** rpmps_print(%p,%p,%x)\n", s, (void *)fp, flags);
     return 0;
 }
 
-static PyObject * rpmps_getattro(PyObject * o, PyObject * n)
-{
-if (_rpmps_debug < 0)
-fprintf(stderr, "*** rpmps_getattro(%p,%p)\n", o, n);
-    return PyObject_GenericGetAttr(o, n);
-}
-
-static int rpmps_setattro(PyObject * o, PyObject * n, PyObject * v)
-{
-if (_rpmps_debug < 0)
-fprintf(stderr, "*** rpmps_setattro(%p,%p,%p)\n", o, n, v);
-    return PyObject_GenericSetAttr(o, n, v);
-}
-
 static int
 rpmps_length(rpmpsObject * s)
 {
@@ -193,17 +179,6 @@ fprintf(stderr, "%p -- ps %p\n", s, s->ps);
 
 /** \ingroup py_c
  */
-static PyObject * rpmps_alloc(PyTypeObject * subtype, int nitems)
-{
-    PyObject * s = PyType_GenericAlloc(subtype, nitems);
-
-if (_rpmps_debug < 0)
-fprintf(stderr, "*** rpmps_alloc(%p,%d) ret %p\n", subtype, nitems, s);
-    return s;
-}
-
-/** \ingroup py_c
- */
 static PyObject * rpmps_new(PyTypeObject * subtype, PyObject *args, PyObject *kwds)
 {
     rpmpsObject * s = (void *) PyObject_New(rpmpsObject, subtype);
@@ -244,8 +219,8 @@ PyTypeObject rpmps_Type = {
 	(hashfunc)0,			/* tp_hash */
 	(ternaryfunc)0,			/* tp_call */
 	(reprfunc)0,			/* tp_str */
-	(getattrofunc) rpmps_getattro,	/* tp_getattro */
-	(setattrofunc) rpmps_setattro,	/* tp_setattro */
+	PyObject_GenericGetAttr,	/* tp_getattro */
+	PyObject_GenericSetAttr,	/* tp_setattro */
 	0,				/* tp_as_buffer */
 	Py_TPFLAGS_DEFAULT, 		/* tp_flags */
 	rpmps_doc,			/* tp_doc */
@@ -264,7 +239,7 @@ PyTypeObject rpmps_Type = {
 	0,				/* tp_descr_set */
 	0,				/* tp_dictoffset */
 	(initproc) rpmps_init,		/* tp_init */
-	(allocfunc) rpmps_alloc,	/* tp_alloc */
+	(allocfunc)0,			/* tp_alloc */
 	(newfunc) rpmps_new,		/* tp_new */
 	(freefunc) rpmps_free,		/* tp_free */
 	0,				/* tp_is_gc */
