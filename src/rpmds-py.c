@@ -435,16 +435,6 @@ rpmds_print(rpmdsObject * s, FILE * fp, int flags)
     return 0;
 }
 
-static PyObject * rpmds_getattro(PyObject * o, PyObject * n)
-{
-    return PyObject_GenericGetAttr(o, n);
-}
-
-static int rpmds_setattro(PyObject * o, PyObject * n, PyObject * v)
-{
-    return PyObject_GenericSetAttr(o, n, v);
-}
-
 static int
 rpmds_length(rpmdsObject * s)
 {
@@ -517,17 +507,6 @@ fprintf(stderr, "%p -- ds %p\n", s, s->ds);
 
 /** \ingroup py_c
  */
-static PyObject * rpmds_alloc(PyTypeObject * subtype, int nitems)
-{
-    PyObject * s = PyType_GenericAlloc(subtype, nitems);
-
-if (_rpmds_debug < 0)
-fprintf(stderr, "*** rpmds_alloc(%p,%d) ret %p\n", subtype, nitems, s);
-    return s;
-}
-
-/** \ingroup py_c
- */
 static PyObject * rpmds_new(PyTypeObject * subtype, PyObject *args, PyObject *kwds)
 {
     rpmdsObject * s = (void *) PyObject_New(rpmdsObject, subtype);
@@ -568,8 +547,8 @@ PyTypeObject rpmds_Type = {
 	(hashfunc)0,			/* tp_hash */
 	(ternaryfunc)0,			/* tp_call */
 	(reprfunc)0,			/* tp_str */
-	(getattrofunc) rpmds_getattro,	/* tp_getattro */
-	(setattrofunc) rpmds_setattro,	/* tp_setattro */
+	PyObject_GenericGetAttr,	/* tp_getattro */
+	PyObject_GenericSetAttr,	/* tp_setattro */
 	0,				/* tp_as_buffer */
 	Py_TPFLAGS_DEFAULT |		/* tp_flags */
 	    Py_TPFLAGS_HAVE_RICHCOMPARE,
@@ -589,7 +568,7 @@ PyTypeObject rpmds_Type = {
 	0,				/* tp_descr_set */
 	0,				/* tp_dictoffset */
 	(initproc) rpmds_init,		/* tp_init */
-	(allocfunc) rpmds_alloc,	/* tp_alloc */
+	(allocfunc)0,			/* tp_alloc */
 	(newfunc) rpmds_new,		/* tp_new */
 	(freefunc) rpmds_free,		/* tp_free */
 	0,				/* tp_is_gc */
