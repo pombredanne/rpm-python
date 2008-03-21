@@ -229,7 +229,7 @@ void init_rpmng(void);	/* XXX eliminate gcc warning */
 void init_rpmng(void)
 {
     PyObject * d, *o, * tag = NULL, * dict;
-    int i;
+    int i, extnum;
     const struct headerSprintfExtension_s * extensions = rpmHeaderFormats;
     const struct headerSprintfExtension_s * ext;
     PyObject * m;
@@ -274,32 +274,40 @@ void init_rpmng(void)
     dict = PyDict_New();
 
     for (i = 0; i < rpmTagTableSize; i++) {
+    	PyModule_AddIntConstant(m, rpmTagTable[i].name, rpmTagTable[i].val);
+
 	tag = PyInt_FromLong(rpmTagTable[i].val);
-	PyDict_SetItemString(d, (char *) rpmTagTable[i].name, tag);
+	o = PyString_FromString(rpmTagTable[i].name + 7);
+	PyDict_SetItem(dict, tag, o);
 	Py_DECREF(tag);
-        PyDict_SetItem(dict, tag, o=PyString_FromString(rpmTagTable[i].name + 7));
 	Py_DECREF(o);
     }
 
+    /*
+     * XXX this is pretty silly and broken but add some uniqueish 
+     * number for extensions too..
+     */
+    extnum = 10000;
     while (extensions->name) {
 	if (extensions->type == HEADER_EXT_TAG) {
             ext = extensions;
-	    o = PyCObject_FromVoidPtr((struct headerSprintfExtension_s *) ext, NULL);
-            PyDict_SetItemString(d, (char *) extensions->name, o);
+    	    PyModule_AddIntConstant(m, ext->name, extnum);
+
+	    tag = PyInt_FromLong(extnum);
+	    o = PyString_FromString(ext->name + 7);
+	    PyDict_SetItem(dict, tag, o);
+	    Py_DECREF(tag);
 	    Py_DECREF(o);
-            PyDict_SetItem(dict, tag, o=PyString_FromString(ext->name + 7));
-	    Py_DECREF(o);
+
+	    extnum++;
         }
         extensions++;
     }
 
-    PyDict_SetItemString(d, "tagnames", dict);
-    Py_DECREF(dict);
-
+    PyModule_AddObject(m, "tagnames", dict);
 
 #define REGISTER_ENUM(val) \
-    PyDict_SetItemString(d, #val, o=PyInt_FromLong( val )); \
-    Py_DECREF(o);
+    PyModule_AddIntConstant(m, #val, val);
 
     REGISTER_ENUM(RPMTAG_NOT_FOUND);
 
