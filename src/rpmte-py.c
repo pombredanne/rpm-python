@@ -44,18 +44,6 @@
  */
 
 static PyObject *
-rpmte_Debug(rpmteObject * s, PyObject * args, PyObject * kwds)
-{
-    char * kwlist[] = {"debugLevel", NULL};
-
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "i", kwlist, &_rpmte_debug))
-	return NULL;
-
-    Py_INCREF(Py_None);
-    return Py_None;
-}
-
-static PyObject *
 rpmte_TEType(rpmteObject * s)
 {
     return Py_BuildValue("i", rpmteType(s->te));
@@ -239,8 +227,6 @@ rpmte_FI(rpmteObject * s, PyObject * args, PyObject * kwds)
 /** \ingroup py_c
  */
 static struct PyMethodDef rpmte_methods[] = {
-    {"Debug",	(PyCFunction)rpmte_Debug,	METH_VARARGS|METH_KEYWORDS,
-	NULL},
     {"Type",	(PyCFunction)rpmte_TEType,	METH_NOARGS,
 "te.Type() -> Type\n\
 - Return element type (rpm.TR_ADDED | rpm.TR_REMOVED).\n" },

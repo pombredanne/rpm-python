@@ -150,24 +150,6 @@ struct rpmtsCallbackType_s {
     PyThreadState *_save;
 };
 
-/** \ingroup py_c
- */
-static PyObject *
-rpmts_Debug(rpmtsObject * s, PyObject * args, PyObject * kwds)
-{
-    char * kwlist[] = {"debugLevel", NULL};
-
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "i:Debug", kwlist,
-    	    &_rpmts_debug))
-	return NULL;
-
-if (_rpmts_debug < 0)
-fprintf(stderr, "*** rpmts_Debug(%p) ts %p\n", s, s->ts);
-
-    Py_INCREF(Py_None);
-    return Py_None;
-}
-
 #if 0
 /** \ingroup py_c
  * Add package to universe of possible packages to install in transaction set.
@@ -1149,9 +1131,6 @@ fprintf(stderr, "*** rpmts_Match(%p) ts %p\n", s, s->ts);
 /** \ingroup py_c
  */
 static struct PyMethodDef rpmts_methods[] = {
- {"Debug",	(PyCFunction)rpmts_Debug,	METH_VARARGS|METH_KEYWORDS,
-        NULL},
-
  {"addInstall",	(PyCFunction) rpmts_AddInstall,	METH_VARARGS|METH_KEYWORDS,
 	NULL },
  {"addErase",	(PyCFunction) rpmts_AddErase,	METH_VARARGS|METH_KEYWORDS,

@@ -4,18 +4,6 @@
 
 #include "rpmps-py.h"
 
-static PyObject *
-rpmps_Debug(rpmpsObject * s, PyObject * args, PyObject * kwds)
-{
-    char * kwlist[] = {"debugLevel", NULL};
-    
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "i", kwlist, &_rpmps_debug))
-	return NULL;
-
-    Py_INCREF(Py_None);
-    return Py_None;
-}
-
 static int
 rpmps_append(rpmpsObject * s, PyObject * value)
 {
@@ -72,8 +60,6 @@ fprintf(stderr, "*** rpmps_iternext(%p) ps %p psi %p\n", s, s->ps, s->psi);
 }
 
 static struct PyMethodDef rpmps_methods[] = {
- {"Debug",	(PyCFunction)rpmps_Debug,	METH_VARARGS|METH_KEYWORDS,
-	NULL},
   {"append",	(PyCFunction)rpmps_append,	METH_VARARGS, NULL},
  {NULL,		NULL}		/* sentinel */
 };

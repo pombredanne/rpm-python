@@ -8,18 +8,6 @@
 #include "rpmfi-py.h"
 
 static PyObject *
-rpmfi_Debug(rpmfiObject * s, PyObject * args, PyObject * kwds)
-{
-    char * kwlist[] = {"debugLevel", NULL};
-
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "i", kwlist, &_rpmfi_debug))
-	return NULL;
-
-    Py_INCREF(Py_None);
-    return Py_None;
-}
-
-static PyObject *
 rpmfi_FC(rpmfiObject * s)
 {
     return Py_BuildValue("i", rpmfiFC(s->fi));
@@ -254,8 +242,6 @@ static struct PyMethodDef rpmfiFile_methods[] = {
 };
 
 static struct PyMethodDef rpmfi_methods[] = {
- {"Debug",	(PyCFunction)rpmfi_Debug,	METH_VARARGS|METH_KEYWORDS,
-	NULL},
  {"FC",		(PyCFunction)rpmfi_FC,		METH_NOARGS,
 	NULL},
  {"FX",		(PyCFunction)rpmfi_FX,		METH_NOARGS,
