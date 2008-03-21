@@ -1044,6 +1044,7 @@ rpmts_Match(rpmtsObject * s, PyObject * args, PyObject * kwds)
     int len = 0;
     rpmTag tag = RPMDBI_PACKAGES;
     char * kwlist[] = {"tagNumber", "key", NULL};
+    rpmdbMatchIterator mi = NULL;
 
 if (_rpmts_debug)
 fprintf(stderr, "*** rpmts_Match(%p) ts %p\n", s, s->ts);
@@ -1071,17 +1072,13 @@ fprintf(stderr, "*** rpmts_Match(%p) ts %p\n", s, s->ts);
 	}
     }
 
-    /* XXX If not already opened, open the database O_RDONLY now. */
-    /* XXX FIXME: lazy default rdonly open also done by rpmtsInitIterator(). */
-    if (rpmtsGetRdb(s->ts) == NULL) {
-	int rc = rpmtsOpenDB(s->ts, O_RDONLY);
-	if (rc || rpmtsGetRdb(s->ts) == NULL) {
-	    PyErr_SetString(PyExc_TypeError, "rpmdb open failed");
-	    return NULL;
-	}
+    mi = rpmtsInitIterator(s->ts, tag, key, len);
+    if (mi == NULL) {
+	PyErr_SetString(pyrpmError, "rpmdb open failed");
+	return NULL;
     }
 
-    return rpmmi_Wrap( rpmtsInitIterator(s->ts, tag, key, len), (PyObject*)s);
+    return rpmmi_Wrap(mi, (PyObject*)s);
 }
 
 /** \ingroup py_c
