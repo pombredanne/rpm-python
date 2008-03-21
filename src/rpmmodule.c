@@ -228,7 +228,7 @@ void init_rpmng(void);	/* XXX eliminate gcc warning */
  */
 void init_rpmng(void)
 {
-    PyObject * d, *o, * tag = NULL, * dict;
+    PyObject *o, * tag = NULL, * dict;
     int i, extnum;
     const struct headerSprintfExtension_s * extensions = rpmHeaderFormats;
     const struct headerSprintfExtension_s * ext;
@@ -256,17 +256,9 @@ void init_rpmng(void)
 
     rpmReadConfigFiles(NULL, NULL);
 
-    d = PyModule_GetDict(m);
-
-#ifdef	HACK
-    pyrpmError = PyString_FromString("_rpm.error");
-    PyDict_SetItemString(d, "error", pyrpmError);
-    Py_DECREF(pyrpmError);
-#else
     pyrpmError = PyErr_NewException("_rpm.error", NULL, NULL);
     if (pyrpmError != NULL)
-	PyDict_SetItemString(d, "error", pyrpmError);
-#endif
+	PyModule_AddObject(m, "error", pyrpmError);
 
     Py_INCREF(&rpmts_Type);
     PyModule_AddObject(m, "ts", (PyObject *) &rpmts_Type);
