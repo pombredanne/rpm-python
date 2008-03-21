@@ -1,5 +1,5 @@
-#ifndef H_RPMTE_PY
-#define H_RPMTE_PY
+#ifndef _RPMTE_PY_H
+#define _RPMTE_PY_H
 
 #include <Python.h>
 

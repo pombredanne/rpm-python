@@ -1,5 +1,5 @@
-#ifndef RPMPYTHON_HEADER
-#define RPMPYTHON_HEADER
+#ifndef _RPMHEADER_PY_H
+#define _RPMHEADER_PY_H
 
 #include <Python.h>
 

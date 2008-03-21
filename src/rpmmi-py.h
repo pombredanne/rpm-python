@@ -1,5 +1,5 @@
-#ifndef H_RPMMI_PY
-#define H_RPMMI_PY
+#ifndef _RPMMI_PY_H
+#define _RPMMI_PY_H
 
 #include <Python.h>
 

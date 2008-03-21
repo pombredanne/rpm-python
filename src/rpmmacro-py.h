@@ -1,5 +1,5 @@
-#ifndef H_RPMMACRO_PY
-#define H_RPMMACRO_PY
+#ifndef _RPMMACRO_PY_H
+#define _RPMMACRO_PY_H
 
 #include <Python.h>
 
