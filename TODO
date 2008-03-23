@@ -1,0 +1,106 @@
+	Misc ideas for the rpm-python new design / todo-list
+	----------------------------------------------------
+
+Python stuff goes into rpmng/ and C-stuff to src/, unit tests + docs 
+should be added once we've really rolling. 
+
+Misc ideas:
+
+- Do things in python. Only do in C what cannot be done otherwise, and
+  hide the C-level bindings from rpm-python consumers by wrapping into
+  more comfortable, pure python objects. The transaction callback object
+  and Transaction wrapper in yum are good examples of this. Wrapping
+  *everything* with pure python gives more flexibility to change things
+  in the C-level bindings as rpm itself evolves. (python)
+
+- Design the API for user needs, not based on rpm limitations. Again,
+  the ts callback is a good example of wrapping an awful interface into
+  something fairly nice for python. Rpm-python internal implementation
+  can be pugly as necessary and as things are fixed in rpm itself,
+  we can sanitize the internal code too while maintaining the same
+  interface for python users. Might not be always possible to worth
+  pursuing at least. (python)
+
+- Get rid of the bleeping tuples. They can never be changed without
+  breaking compatibility, such designs should be avoided at all costs.
+  Expressing 2D X,Y co-ordinates as tuples is fine, because there can
+  never be more than X and Y in 2D co-ordinates. Few, if any things in
+  rpm can be assumed to never change: nobody saw arch being that important
+  for rpm problems, and so we're stuck with the broken rpmps/depsolve
+  callback and iterators. Because of the tuples.
+
+  Anything passed to rpm-python consumers needs to be an object that
+  can be extended by adding attributes and/or methods. Using tuples
+  for C-level <-> rpm-python internal python parts is, well, acceptable,
+  as long as they're never exposed in the rpm-python API. (C, python)
+
+- Make the various header/package reading methods take python file objects
+  instead of requiring lowlevel file descriptor numbers (C, python)
+
+- Turn C-level bitfields into some nicer construct for python level (python)
+
+- Add methods for manipulating header contents (C)
+
+- Add rpmlog python object + callback (C)
+
+- Add + use proper exception classes, review current ones for sanity
+  (C, python)
+
+- Header/package class hierarchies, maybe something like (not really
+  thought out):
+
+		       	  "raw" header
+			  - manipulation methods
+			/	 	  \
+		sig header		   "real" header
+
+			rpm package
+			- sig header
+			- "real" header
+			- high level methods for accessing header data
+		      /		    \
+	installed pkg			package file	
+	- db instance			- file object
+	
+
+- The C code for header <-> python data conversion is a horrid mess.
+  I'm in the process of turning the header data into a more-or-less
+  abstract iterable container with kind of type-safety on C-level, once at
+  least  parts of that is in place the data conversion to and from C <->
+  python should be much saner.
+
+- Consistent iterator behavior for all relevant objects. Currently
+  some objects have "real" iterators, others like rpmds and rpmfi iterate
+  over themselves and produce pugly tuples in the process. Mostly done,
+  review rpmfi and rpmds iteration refcounts which are likely to be
+  busted atm.
+
+- Verification API: files, %verify scripts and dependencies (C, python)
+
+- Stuff RPMTAG_*, RPMVSF_* etc constants to separate namespace(s),
+  eg rpm.constants.* instead of polluting the main module namespace.
+  API users can do 'from rpm.constants import *' if they want that
+  junk in their namespace.
+
+  The RPMTAG_* constants are the biggest offender here, RPMTRANS_*,
+  RPMSENSE_*, RPMFILE_* etc belong quite naturally to rpm.ts, rpm.ds
+  and rpm.fi namespaces respectively. (C, python)
+
+- Consistent naming style for objects, methods etc. It's a mess. (C, python)
+
+- Review all return values for sanity - for example ts.run() None vs
+  [] vs [<prob1>, <prob2> ...] kind of insanity needs to be axed (C)
+
+  I've been thinking of using the rpmproblem mechanism for recording
+  in-transaction errors - so you'd get things like "%post scriptlet
+  failed for package foo-1.2" in an rpm problem set you can easily dump
+  to user as "The following errors occurred during transaction:" at
+  the end of the run. Easy to implement and useful for rpm itself too.
+
+- Callback for opening packages, namely to let API user decide what
+  to do for things like missing/bad/untrusted GPG-keys etc instead
+  of dumping garbage on stderr (C, python)
+
+- Proper documentation with examples for the entire API.
+
+- ... lots of other stuff ;)
