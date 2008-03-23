@@ -172,8 +172,8 @@ rpmts_AddInstall(rpmtsObject * s, PyObject * args, PyObject * kwds)
 
     debug("(%p,%p,%p,%s) ts %p\n", s, h, key, how, s->ts);
 
-    if (how && strcmp(how, "a") && strcmp(how, "u") && strcmp(how, "i")) {
-	PyErr_SetString(PyExc_TypeError, "how argument must be \"u\", \"a\", or \"i\"");
+    if (how && strcmp(how, "u") && strcmp(how, "i")) {
+	PyErr_SetString(PyExc_ValueError, "how-argument must be one of \"u\" or \"i\"");
 	return NULL;
     } else if (how && !strcmp(how, "u"))
     	isUpgrade = 1;
