@@ -66,25 +66,25 @@ rpmds_Ix(rpmdsObject * s)
 }
 
 static PyObject *
-rpmds_DNEVR(rpmdsObject * s)
+rpmdsDep_DNEVR(rpmdsDepObject * s)
 {
     return Py_BuildValue("s", rpmdsDNEVR(s->ds));
 }
 
 static PyObject *
-rpmds_N(rpmdsObject * s)
+rpmdsDep_N(rpmdsDepObject * s)
 {
     return Py_BuildValue("s", rpmdsN(s->ds));
 }
 
 static PyObject *
-rpmds_EVR(rpmdsObject * s)
+rpmdsDep_EVR(rpmdsDepObject * s)
 {
     return Py_BuildValue("s", rpmdsEVR(s->ds));
 }
 
 static PyObject *
-rpmds_Flags(rpmdsObject * s)
+rpmdsDep_Flags(rpmdsDepObject * s)
 {
     return Py_BuildValue("i", rpmdsFlags(s->ds));
 }
@@ -96,19 +96,19 @@ rpmds_BT(rpmdsObject * s)
 }
 
 static PyObject *
-rpmds_TagN(rpmdsObject * s)
+rpmdsDep_TagN(rpmdsDepObject * s)
 {
     return Py_BuildValue("i", rpmdsTagN(s->ds));
 }
 
 static PyObject *
-rpmds_Color(rpmdsObject * s)
+rpmdsDep_Color(rpmdsDepObject * s)
 {
     return Py_BuildValue("i", rpmdsColor(s->ds));
 }
 
 static PyObject *
-rpmds_Refs(rpmdsObject * s)
+rpmdsDep_Refs(rpmdsDepObject * s)
 {
     return Py_BuildValue("i", rpmdsRefs(s->ds));
 }
@@ -188,23 +188,20 @@ rpmds_iternext(rpmdsObject * s)
     PyObject * result = NULL;
 
     /* Reset loop indices on 1st entry. */
-    if (!s->active) {
+    if (s->cur == NULL) {
 	s->ds = rpmdsInit(s->ds);
-	s->active = 1;
+    } else {
+	Py_DECREF(s->cur);
     }
 
     /* If more to do, return a (N, EVR, Flags) tuple. */
     if (rpmdsNext(s->ds) >= 0) {
-	const char * N = rpmdsN(s->ds);
-	const char * EVR = rpmdsEVR(s->ds);
-	rpmTag tagN = rpmdsTagN(s->ds);
-	rpmsenseFlags Flags = rpmdsFlags(s->ds);
-
-	if (N != NULL) N = strdup(N);
-	if (EVR != NULL) EVR = strdup(EVR);
-	result = (PyObject *) rpmds_Wrap( rpmdsSingle(tagN, N, EVR, Flags) );
-    } else
-	s->active = 0;
+	s->cur = PyObject_New(rpmdsDepObject, &rpmdsDep_Type);
+	s->cur->ds = s->ds;
+	result = (PyObject *) s->cur;
+    } else {
+	s->cur = NULL;
+    }
 
     return result;
 }
@@ -323,27 +320,31 @@ rpmds_Rpmlib(rpmdsObject * s)
     return (PyObject *) rpmds_Wrap( ds );
 }
 
+static struct PyMethodDef rpmdsDep_methods[] = {
+ {"DNEVR",	(PyCFunction)rpmdsDep_DNEVR,	METH_NOARGS,
+	"ds.DNEVR -> DNEVR	- Return current DNEVR.\n" },
+ {"N",		(PyCFunction)rpmdsDep_N,		METH_NOARGS,
+	"ds.N -> N		- Return current N.\n" },
+ {"EVR",	(PyCFunction)rpmdsDep_EVR,		METH_NOARGS,
+	"ds.EVR -> EVR		- Return current EVR.\n" },
+ {"Flags",	(PyCFunction)rpmdsDep_Flags,	METH_NOARGS,
+	"ds.Flags -> Flags	- Return current Flags.\n" },
+ {"TagN",	(PyCFunction)rpmdsDep_TagN,	METH_NOARGS,
+	"ds.TagN -> TagN	- Return current TagN.\n" },
+ {"Color",	(PyCFunction)rpmdsDep_Color,	METH_NOARGS,
+	"ds.Color -> Color	- Return current Color.\n" },
+ {"Refs",	(PyCFunction)rpmdsDep_Refs,	METH_NOARGS,
+	"ds.Refs -> Refs	- Return current Refs.\n" },
+ {NULL,		NULL}		/* sentinel */
+};
+
 static struct PyMethodDef rpmds_methods[] = {
  {"Count",	(PyCFunction)rpmds_Count,	METH_NOARGS,
 	"ds.Count -> Count	- Return no. of elements.\n" },
  {"Ix",		(PyCFunction)rpmds_Ix,		METH_NOARGS,
 	"ds.Ix -> Ix		- Return current element index.\n" },
- {"DNEVR",	(PyCFunction)rpmds_DNEVR,	METH_NOARGS,
-	"ds.DNEVR -> DNEVR	- Return current DNEVR.\n" },
- {"N",		(PyCFunction)rpmds_N,		METH_NOARGS,
-	"ds.N -> N		- Return current N.\n" },
- {"EVR",	(PyCFunction)rpmds_EVR,		METH_NOARGS,
-	"ds.EVR -> EVR		- Return current EVR.\n" },
- {"Flags",	(PyCFunction)rpmds_Flags,	METH_NOARGS,
-	"ds.Flags -> Flags	- Return current Flags.\n" },
  {"BT",		(PyCFunction)rpmds_BT,		METH_NOARGS,
 	"ds.BT -> BT	- Return build time.\n" },
- {"TagN",	(PyCFunction)rpmds_TagN,	METH_NOARGS,
-	"ds.TagN -> TagN	- Return current TagN.\n" },
- {"Color",	(PyCFunction)rpmds_Color,	METH_NOARGS,
-	"ds.Color -> Color	- Return current Color.\n" },
- {"Refs",	(PyCFunction)rpmds_Refs,	METH_NOARGS,
-	"ds.Refs -> Refs	- Return current Refs.\n" },
  {"next",	(PyCFunction)rpmds_Next,	METH_NOARGS,
 "ds.next() -> (N, EVR, Flags)\n\
 - Retrieve next dependency triple.\n" },
@@ -442,7 +443,7 @@ static int rpmds_init(rpmdsObject * s, PyObject *args, PyObject *kwds)
 	}
     }
     s->ds = rpmdsNew(hdrGetHeader(ho), tagN, flags);
-    s->active = 0;
+    s->cur = NULL;
 
     return 0;
 }
@@ -479,10 +480,20 @@ static PyObject * rpmds_new(PyTypeObject * subtype, PyObject *args, PyObject *kw
 static char rpmds_doc[] =
 "";
 
+static void rpmdsDep_dealloc(rpmdsObject * s)
+{
+    debug("(%p)\n", s);
+
+    PyObject_Del((PyObject *) s);
+}
+
+static char rpmdsDep_doc[] =
+"";
+
 PyTypeObject rpmds_Type = {
 	PyObject_HEAD_INIT(&PyType_Type)
 	0,				/* ob_size */
-	"rpm.ds",			/* tp_name */
+	"rpmds",			/* tp_name */
 	sizeof(rpmdsObject),		/* tp_basicsize */
 	0,				/* tp_itemsize */
 	/* methods */
@@ -525,6 +536,50 @@ PyTypeObject rpmds_Type = {
 	0,				/* tp_is_gc */
 };
 
+PyTypeObject rpmdsDep_Type = {
+	PyObject_HEAD_INIT(&PyType_Type)
+	0,				/* ob_size */
+	"dsDep",			/* tp_name */
+	sizeof(rpmdsDepObject),		/* tp_basicsize */
+	0,				/* tp_itemsize */
+	/* methods */
+	(destructor) rpmdsDep_dealloc,	/* tp_dealloc */
+	(printfunc)0,			/* tp_print */
+	(getattrfunc)0,			/* tp_getattr */
+	(setattrfunc)0,			/* tp_setattr */
+	(cmpfunc)0,			/* tp_compare */
+	(reprfunc)0,			/* tp_repr */
+	0,				/* tp_as_number */
+	0,				/* tp_as_sequence */
+	0,				/* tp_as_mapping */
+	(hashfunc)0,			/* tp_hash */
+	(ternaryfunc)0,			/* tp_call */
+	(reprfunc)0,			/* tp_str */
+	PyObject_GenericGetAttr,	/* tp_getattro */
+	PyObject_GenericSetAttr,	/* tp_setattro */
+	0,				/* tp_as_buffer */
+	Py_TPFLAGS_DEFAULT, 		/* tp_flags */
+	rpmdsDep_doc,			/* tp_doc */
+	0,				/* tp_traverse */
+	0,				/* tp_clear */
+	(richcmpfunc)0,			/* tp_richcompare */
+	0,				/* tp_weaklistoffset */
+	(getiterfunc)0,			/* tp_iter */
+	(iternextfunc)0,		/* tp_iternext */
+	rpmdsDep_methods,		/* tp_methods */
+	0,				/* tp_members */
+	0,				/* tp_getset */
+	0,				/* tp_base */
+	0,				/* tp_dict */
+	0,				/* tp_descr_get */
+	0,				/* tp_descr_set */
+	0,				/* tp_dictoffset */
+	(initproc)0,			/* tp_init */
+	(allocfunc)0,			/* tp_alloc */
+	(newfunc)0,			/* tp_new */
+	(freefunc)0,			/* tp_free */
+	0,				/* tp_is_gc */
+};
 /* ---------- */
 
 rpmds dsFromDs(rpmdsObject * s)
@@ -540,7 +595,7 @@ rpmds_Wrap(rpmds ds)
     if (s == NULL)
 	return NULL;
     s->ds = ds;
-    s->active = 0;
+    s->cur = NULL;
     return s;
 }
 

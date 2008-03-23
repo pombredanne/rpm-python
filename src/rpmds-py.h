@@ -9,19 +9,24 @@
  * \file python/rpmds-py.h
  */
 
+typedef struct rpmdsDepObject_s {
+    PyObject_HEAD
+    rpmds ds;
+} rpmdsDepObject;
+
 /**
  */
 typedef struct rpmdsObject_s {
     PyObject_HEAD
-    PyObject *md_dict;		/*!< to look like PyModuleObject */
-    int		active;
-    rpmds	ds;
+    rpmdsDepObject * cur;
+    rpmds ds;
 } rpmdsObject;
 
 /**
  */
 extern PyTypeObject rpmds_Type;
 
+extern PyTypeObject rpmdsDep_Type;
 /**
  */
 rpmds dsFromDs(rpmdsObject * ds);
