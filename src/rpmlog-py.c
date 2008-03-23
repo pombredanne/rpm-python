@@ -7,6 +7,8 @@
 #include "rpmlog-py.h"
 #include "rpmdebug-py.h"
 
+extern PyObject * pyrpmError;
+
 static PyObject * rpmlog_Log(PyObject * self, PyObject * args, PyObject * kwds)
 {
     char * msg;
@@ -23,8 +25,56 @@ static PyObject * rpmlog_Log(PyObject * self, PyObject * args, PyObject * kwds)
     return Py_None;
     
 }
+
+/**
+ */
+static PyObject * rpmlog_setFile (PyObject * self, PyObject * args, PyObject *kwds)
+{
+    PyObject * fop = NULL;
+    FILE * fp = NULL;
+    char * kwlist[] = {"fileObject", NULL};
+
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "|O:logSetFile", kwlist, &fop))
+	return NULL;
+
+    if (fop) {
+	if (!PyFile_Check(fop)) {
+	    PyErr_SetString(pyrpmError, "requires file object");
+	    return NULL;
+	}
+	fp = PyFile_AsFile(fop);
+    }
+
+    (void) rpmlogSetFile(fp);
+
+    Py_INCREF(Py_None);
+    return (PyObject *) Py_None;
+}
+
+/**
+ */
+static PyObject *
+rpmlog_setVerbosity (PyObject * self, PyObject * args, PyObject *kwds)
+{
+    int level;
+    char * kwlist[] = {"level", NULL};
+
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "i", kwlist, &level))
+	return NULL;
+
+    rpmSetVerbosity(level);
+
+    Py_INCREF(Py_None);
+    return (PyObject *) Py_None;
+}
+
 static struct PyMethodDef rpmlog_methods[] = {
-    {"log",	    (PyCFunction) rpmlog_Log,	METH_VARARGS|METH_KEYWORDS},
+    { "log",	    (PyCFunction) rpmlog_Log,	
+	METH_VARARGS|METH_KEYWORDS, NULL },
+    { "setVerbosity", (PyCFunction) rpmlog_setVerbosity, 
+	METH_VARARGS|METH_KEYWORDS, NULL },
+    { "setFile", (PyCFunction) rpmlog_setFile, 
+	METH_VARARGS|METH_KEYWORDS, NULL },
     {NULL,		NULL}		/* sentinel */
 };
 

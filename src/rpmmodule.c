@@ -18,6 +18,7 @@
 #include "rpmmacro-py.h"
 #include "rpmte-py.h"
 #include "rpmts-py.h"
+#include "rpmlog-py.h"
 #include "rpmdebug-py.h"
 
 /** \ingroup python
@@ -27,6 +28,7 @@
 /**
  */
 PyObject * pyrpmError;
+rpmlogObject * pyrpmLog;
 
 /**
  */
@@ -90,48 +92,6 @@ static PyObject * checkSignals(PyObject * self, PyObject * args)
 
 /**
  */
-static PyObject * setLogFile (PyObject * self, PyObject * args, PyObject *kwds)
-{
-    PyObject * fop = NULL;
-    FILE * fp = NULL;
-    char * kwlist[] = {"fileObject", NULL};
-
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "|O:logSetFile", kwlist, &fop))
-	return NULL;
-
-    if (fop) {
-	if (!PyFile_Check(fop)) {
-	    PyErr_SetString(pyrpmError, "requires file object");
-	    return NULL;
-	}
-	fp = PyFile_AsFile(fop);
-    }
-
-    (void) rpmlogSetFile(fp);
-
-    Py_INCREF(Py_None);
-    return (PyObject *) Py_None;
-}
-
-/**
- */
-static PyObject *
-setVerbosity (PyObject * self, PyObject * args, PyObject *kwds)
-{
-    int level;
-    char * kwlist[] = {"level", NULL};
-
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "i", kwlist, &level))
-	return NULL;
-
-    rpmSetVerbosity(level);
-
-    Py_INCREF(Py_None);
-    return (PyObject *) Py_None;
-}
-
-/**
- */
 static PyObject *
 setEpochPromote (PyObject * self, PyObject * args, PyObject * kwds)
 {
@@ -190,15 +150,9 @@ static PyMethodDef rpmModuleMethods[] = {
 	NULL },
     { "readHeaderFromFD", (PyCFunction) rpmSingleHeaderFromFD, METH_VARARGS|METH_KEYWORDS,
 	NULL },
-
-    { "setLogFile", (PyCFunction) setLogFile, METH_VARARGS|METH_KEYWORDS,
-	NULL },
-
     { "versionCompare", (PyCFunction) versionCompare, METH_VARARGS|METH_KEYWORDS,
 	NULL },
     { "labelCompare", (PyCFunction) labelCompare, METH_VARARGS|METH_KEYWORDS,
-	NULL },
-    { "setVerbosity", (PyCFunction) setVerbosity, METH_VARARGS|METH_KEYWORDS,
 	NULL },
     { "setEpochPromote", (PyCFunction) setEpochPromote, METH_VARARGS|METH_KEYWORDS,
 	NULL },
@@ -240,9 +194,9 @@ void init_rpmng(void)
     if (PyType_Ready(&rpmfi_Type) < 0) return;
     if (PyType_Ready(&rpmmi_Type) < 0) return;
     if (PyType_Ready(&rpmps_Type) < 0) return;
-
     if (PyType_Ready(&rpmte_Type) < 0) return;
     if (PyType_Ready(&rpmts_Type) < 0) return;
+    if (PyType_Ready(&rpmlog_Type) < 0) return;
 
     m = Py_InitModule3("_rpmng", rpmModuleMethods, rpm__doc__);
     if (m == NULL)
@@ -263,6 +217,9 @@ void init_rpmng(void)
 
     Py_INCREF(&rpmts_Type);
     PyModule_AddObject(m, "ts", (PyObject *) &rpmts_Type);
+
+    pyrpmLog = PyObject_New(rpmlogObject, &rpmlog_Type);    
+    PyModule_AddObject(m, "log", (PyObject *) pyrpmLog);
 
     dict = PyDict_New();
 
