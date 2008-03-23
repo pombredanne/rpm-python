@@ -1157,7 +1157,7 @@ static int rpmts_setattro(PyObject * o, PyObject * n, PyObject * v)
     if (!strcmp(name, "scriptFd")) {
 	if (!PyArg_Parse(v, "i", &fdno)) return 0;
 	if (fdno < 0) {
-	    PyErr_SetString(PyExc_TypeError, "bad file descriptor");
+	    PyErr_SetString(PyExc_ValueError, "bad file descriptor");
 	    return -1;
 	} else {
 	    s->scriptFd = fdDup(fdno);
