@@ -203,36 +203,6 @@ static PyObject * hdrUnload(hdrObject * s, PyObject * args, PyObject *keywords)
     return rc;
 }
 
-/* make a header with _all_ the tags we need */
-/** \ingroup py_c
- */
-static void mungeFilelist(Header h)
-{
-    const char ** fileNames = NULL;
-    rpm_count_t count = 0;
-
-    rpmfiBuildFNames(h, RPMTAG_BASENAMES, &fileNames, &count);
-
-    if (fileNames == NULL || count <= 0)
-	return;
-
-    /* XXX Legacy tag needs to go away. */
-    headerAddEntry(h, RPMTAG_OLDFILENAMES, RPM_STRING_ARRAY_TYPE,
-			fileNames, count);
-
-    free(fileNames);
-}
-
-/** \ingroup py_c
- */
-static PyObject * hdrFullFilelist(hdrObject * s)
-{
-    mungeFilelist (s->h);
-
-    Py_INCREF(Py_None);
-    return Py_None;
-}
-
 /** \ingroup py_c
  */
 static PyObject * hdrSprintf(hdrObject * s, PyObject * args, PyObject * kwds)
@@ -276,8 +246,6 @@ static struct PyMethodDef hdr_methods[] = {
     {"keys",		(PyCFunction) hdrKeyList,	METH_NOARGS,
 	NULL },
     {"unload",		(PyCFunction) hdrUnload,	METH_VARARGS|METH_KEYWORDS,
-	NULL },
-    {"fullFilelist",	(PyCFunction) hdrFullFilelist,	METH_NOARGS,
 	NULL },
     {"sprintf",		(PyCFunction) hdrSprintf,	METH_VARARGS|METH_KEYWORDS,
 	NULL },
