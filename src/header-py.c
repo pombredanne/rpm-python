@@ -300,20 +300,6 @@ static int dressedHeaderGetEntry(Header h, rpmTag tag, rpmTagType *type,
 	void **p, rpm_count_t *c)
 {
     switch (tag) {
-    case RPMTAG_OLDFILENAMES:
-    {	const char ** fl = NULL;
-	rpm_count_t count;
-	rpmfiBuildFNames(h, RPMTAG_BASENAMES, &fl, &count);
-	if (count > 0) {
-	    *p = fl;
-	    if (c)	*c = count;
-	    if (type)	*type = RPM_STRING_ARRAY_TYPE;
-	    return 1;
-	}
-	if (c)	*c = 0;
-	return 0;
-    }	break;
-
     case RPMTAG_GROUP:
     case RPMTAG_DESCRIPTION:
     case RPMTAG_SUMMARY:
