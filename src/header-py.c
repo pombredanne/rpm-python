@@ -155,7 +155,8 @@ static PyObject * hdrKeyList(hdrObject * s)
 	case RPM_INT16_TYPE:
 	case RPM_STRING_ARRAY_TYPE:
 	case RPM_STRING_TYPE:
-	    PyList_Append(list, o=PyInt_FromLong(tag));
+	    o = PyString_FromString(rpmTagGetName(tag));
+	    PyList_Append(list, o);
 	    Py_DECREF(o);
 	    break;
 	case RPM_I18NSTRING_TYPE: /* hum.. ?`*/
