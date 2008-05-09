@@ -26,7 +26,9 @@
  * - te.R()	Return package release.
  * - te.A()	Return package architecture.
  * - te.O()	Return package operating system.
- * - te.NEVR()	Return package name-version-release.
+ * - te.NEVR()	Return package name-[epoch:]version-release.
+ * - te.NEVRA()	Return package name-[epoch:]version-release.arch
+ * - te.EVR()	Return package [epoch:]version-release.
  * - te.Color() Return package color bits.
  * - te.PkgFileSize() Return no. of bytes in package file (approx).
  * - te.Depth()	Return the level in the dependency tree (after ordering).
@@ -90,6 +92,18 @@ static PyObject *
 rpmte_NEVR(rpmteObject * s)
 {
     return PyString_FromString(rpmteNEVR(s->te));
+}
+
+static PyObject *
+rpmte_NEVRA(rpmteObject * s)
+{
+    return PyString_FromString(rpmteNEVRA(s->te));
+}
+
+static PyObject *
+rpmte_EVR(rpmteObject * s)
+{
+    return PyString_FromString(rpmteEVR(s->te));
 }
 
 static PyObject *
@@ -241,7 +255,13 @@ static struct PyMethodDef rpmte_methods[] = {
 - Return element os.\n" },
     {"NEVR",	(PyCFunction)rpmte_NEVR,	METH_NOARGS,
 "te.NEVR() -> NEVR\n\
-- Return element name-version-release.\n" },
+- Return element name-[epoch:]version-release.\n" },
+    {"NEVRA",	(PyCFunction)rpmte_NEVRA,	METH_NOARGS,
+"te.NEVRA() -> NEVRA\n\
+- Return element name-[epoch:]version-release.arch.\n" },
+    {"EVR",	(PyCFunction)rpmte_EVR,	METH_NOARGS,
+"te.EVR() -> EVR\n\
+- Return element [epoch:]version-release.\n" },
     {"Color",(PyCFunction)rpmte_Color,		METH_NOARGS,
 	NULL},
     {"PkgFileSize",(PyCFunction)rpmte_PkgFileSize,	METH_NOARGS,
