@@ -215,6 +215,24 @@ void init_rpmng(void)
     if (pyrpmError != NULL)
 	PyModule_AddObject(m, "error", pyrpmError);
 
+    Py_INCREF(&hdr_Type);
+    PyModule_AddObject(m, "hdr", (PyObject *) &hdr_Type);
+
+    Py_INCREF(&rpmds_Type);
+    PyModule_AddObject(m, "ds", (PyObject *) &rpmds_Type);
+
+    Py_INCREF(&rpmfi_Type);
+    PyModule_AddObject(m, "fi", (PyObject *) &rpmfi_Type);
+
+    Py_INCREF(&rpmmi_Type);
+    PyModule_AddObject(m, "mi", (PyObject *) &rpmmi_Type);
+
+    Py_INCREF(&rpmps_Type);
+    PyModule_AddObject(m, "ps", (PyObject *) &rpmps_Type);
+
+    Py_INCREF(&rpmte_Type);
+    PyModule_AddObject(m, "te", (PyObject *) &rpmte_Type);
+
     Py_INCREF(&rpmts_Type);
     PyModule_AddObject(m, "ts", (PyObject *) &rpmts_Type);
 
