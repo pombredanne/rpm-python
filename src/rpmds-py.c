@@ -68,19 +68,19 @@ rpmds_Ix(rpmdsObject * s)
 static PyObject *
 rpmdsDep_DNEVR(rpmdsDepObject * s)
 {
-    return Py_BuildValue("s", rpmdsDNEVR(s->ds));
+    return PyString_FromString(rpmdsDNEVR(s->ds));
 }
 
 static PyObject *
 rpmdsDep_N(rpmdsDepObject * s)
 {
-    return Py_BuildValue("s", rpmdsN(s->ds));
+    return PyString_FromString(rpmdsN(s->ds));
 }
 
 static PyObject *
 rpmdsDep_EVR(rpmdsDepObject * s)
 {
-    return Py_BuildValue("s", rpmdsEVR(s->ds));
+    return PyString_FromString(rpmdsEVR(s->ds));
 }
 
 static PyObject *
@@ -410,7 +410,7 @@ rpmds_subscript(rpmdsObject * s, PyObject * key)
     /* XXX make sure that DNEVR exists. */
     rpmdsSetIx(s->ds, ix-1);
     (void) rpmdsNext(s->ds);
-    return Py_BuildValue("s", rpmdsDNEVR(s->ds));
+    return PyString_FromString(rpmdsDNEVR(s->ds));
 }
 
 static PyMappingMethods rpmds_as_mapping = {

@@ -223,7 +223,7 @@ static PyObject * hdrSprintf(hdrObject * s, PyObject * args, PyObject * kwds)
 	return NULL;
     }
 
-    result = Py_BuildValue("s", r);
+    result = PyString_FromString(r);
     free(r);
 
     return result;

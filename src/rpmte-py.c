@@ -53,43 +53,43 @@ rpmte_TEType(rpmteObject * s)
 static PyObject *
 rpmte_N(rpmteObject * s)
 {
-    return Py_BuildValue("s", rpmteN(s->te));
+    return PyString_FromString(rpmteN(s->te));
 }
 
 static PyObject *
 rpmte_E(rpmteObject * s)
 {
-    return Py_BuildValue("s", rpmteE(s->te));
+    return PyString_FromString(rpmteE(s->te));
 }
 
 static PyObject *
 rpmte_V(rpmteObject * s)
 {
-    return Py_BuildValue("s", rpmteV(s->te));
+    return PyString_FromString(rpmteV(s->te));
 }
 
 static PyObject *
 rpmte_R(rpmteObject * s)
 {
-    return Py_BuildValue("s", rpmteR(s->te));
+    return PyString_FromString(rpmteR(s->te));
 }
 
 static PyObject *
 rpmte_A(rpmteObject * s)
 {
-    return Py_BuildValue("s", rpmteA(s->te));
+    return PyString_FromString(rpmteA(s->te));
 }
 
 static PyObject *
 rpmte_O(rpmteObject * s)
 {
-    return Py_BuildValue("s", rpmteO(s->te));
+    return PyString_FromString(rpmteO(s->te));
 }
 
 static PyObject *
 rpmte_NEVR(rpmteObject * s)
 {
-    return Py_BuildValue("s", rpmteNEVR(s->te));
+    return PyString_FromString(rpmteNEVR(s->te));
 }
 
 static PyObject *

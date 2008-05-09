@@ -49,7 +49,7 @@ rpmps_iternext(rpmpsObject * s)
     /* If more to do, return a problem set string. */
     if (rpmpsNextIterator(s->psi) >= 0) {
 	char * ps = rpmProblemString(rpmpsGetProblem(s->psi));
-	result = Py_BuildValue("s", ps);
+	result = PyString_FromString(ps);
 	free(ps);
     } else {
 	s->psi = rpmpsFreeIterator(s->psi);
@@ -112,7 +112,7 @@ rpmps_subscript(rpmpsObject * s, PyObject * key)
     while ((i = rpmpsNextIterator(psi)) >= 0) {
 	if (i == ix) {
 	    char * ps = rpmProblemString(rpmpsGetProblem(psi));
-	    result = Py_BuildValue("s", ps);
+	    result = PyString_FromString(ps);
 	    free(ps);
 	    break;
 	}

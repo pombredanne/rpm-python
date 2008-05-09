@@ -766,7 +766,7 @@ rpmtsCallback(const void * hd, const rpmCallbackType what,
 	if (h) {
 	    const char * n = NULL;
 	    (void) headerNVR(h, &n, NULL, NULL);
-	    pkgObj = Py_BuildValue("s", n);
+	    pkgObj = PyString_FromString(n);
 	} else {
 	    pkgObj = Py_None;
 	    Py_INCREF(pkgObj);

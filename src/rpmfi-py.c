@@ -35,19 +35,19 @@ rpmfi_DX(rpmfiObject * s)
 static PyObject *
 rpmfiFile_BN(rpmfiFileObject * s)
 {
-    return Py_BuildValue("s", strdup(rpmfiBN(s->fi)));
+    return PyString_FromString(rpmfiBN(s->fi));
 }
 
 static PyObject *
 rpmfiFile_DN(rpmfiFileObject * s)
 {
-    return Py_BuildValue("s", strdup(rpmfiDN(s->fi)));
+    return PyString_FromString(rpmfiDN(s->fi));
 }
 
 static PyObject *
 rpmfiFile_FN(rpmfiFileObject * s)
 {
-    return Py_BuildValue("s", strdup(rpmfiFN(s->fi)));
+    return PyString_FromString(rpmfiFN(s->fi));
 }
 
 static PyObject *
@@ -89,13 +89,13 @@ rpmfiFile_MD5(rpmfiFileObject * s)
     for (i = 0; i < 16; i++, t += 2)
 	sprintf(t, "%02x", MD5[i]);
     *t = '\0';
-    return Py_BuildValue("s", strdup(fmd5));
+    return PyString_FromString(fmd5);
 }
 
 static PyObject *
 rpmfiFile_FLink(rpmfiFileObject * s)
 {
-    return Py_BuildValue("s", strdup(rpmfiFLink(s->fi)));
+    return PyString_FromString(rpmfiFLink(s->fi));
 }
 
 static PyObject *
@@ -119,13 +119,13 @@ rpmfiFile_FMtime(rpmfiFileObject * s)
 static PyObject *
 rpmfiFile_FUser(rpmfiFileObject * s)
 {
-    return Py_BuildValue("s", strdup(rpmfiFUser(s->fi)));
+    return PyString_FromString(rpmfiFUser(s->fi));
 }
 
 static PyObject *
 rpmfiFile_FGroup(rpmfiFileObject * s)
 {
-    return Py_BuildValue("s", strdup(rpmfiFGroup(s->fi)));
+    return PyString_FromString(rpmfiFGroup(s->fi));
 }
 
 static PyObject *
@@ -141,7 +141,7 @@ rpmfiFile_FClass(rpmfiFileObject * s)
 
     if ((FClass = rpmfiFClass(s->fi)) == NULL)
 	FClass = "";
-    return Py_BuildValue("s", strdup(FClass));
+    return PyString_FromString(FClass);
 }
 
 static PyObject *
@@ -282,7 +282,7 @@ rpmfi_subscript(rpmfiObject * s, PyObject * key)
 
     ix = (int) PyInt_AsLong(key);
     rpmfiSetFX(s->fi, ix);
-    return Py_BuildValue("s", strdup(rpmfiFN(s->fi)));
+    return PyString_FromString(rpmfiFN(s->fi));
 }
 
 static PyMappingMethods rpmfi_as_mapping = {
