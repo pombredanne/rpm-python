@@ -303,15 +303,14 @@ static int dressedHeaderGetEntry(Header h, rpmTag tag, rpmTagType *type,
     case RPMTAG_GROUP:
     case RPMTAG_DESCRIPTION:
     case RPMTAG_SUMMARY:
-    {	char fmt[128];
-	const char * msgstr;
-	const char * errstr;
+    {	char *fmt;
+	const char *msgstr, *errstr;
 
-	fmt[0] = '\0';
-	(void) stpcpy( stpcpy( stpcpy( fmt, "%{"), rpmTagGetName(tag)), "}\n");
-
+	fmt = rstrscat(NULL, "%{", rpmTagGetName(tag), "}\n", NULL);
+	
 	/* XXX FIXME: memory leak. */
         msgstr = headerSprintf(h, fmt, rpmTagTable, rpmHeaderFormats, &errstr);
+	free(fmt);
 	if (msgstr) {
 	    *p = (void *) msgstr;
 	    if (type)	*type = RPM_STRING_TYPE;
