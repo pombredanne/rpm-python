@@ -307,7 +307,7 @@ rpmte_print(rpmteObject * s, FILE * fp, int flags)
     case TR_REMOVED:	tstr = "--";	break;
     default:		tstr = "??";	break;
     }
-    fprintf(fp, "%s %s %s", tstr, rpmteNEVR(s->te), rpmteA(s->te));
+    fprintf(fp, "%s %s", tstr, rpmteNEVRA(s->te));
     return 0;
 }
 
