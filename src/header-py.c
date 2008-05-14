@@ -285,205 +285,80 @@ rpmTag tagNumFromPyObject (PyObject *item)
     return RPMTAG_NOT_FOUND;
 }
 
-/** \ingroup py_c
- * Retrieve tag info from header.
- * This is a "dressed" entry to headerGetEntry to do:
- *     1) DIRNAME/BASENAME/DIRINDICES -> FILENAMES tag conversions.
- *     2) i18n lookaside (if enabled).
- *
- * @param h            header
- * @param tag          tag
- * @retval type                address of tag value data type
- * @retval p           address of pointer to tag value(s)
- * @retval c           address of number of values
- * @return             0 on success, 1 on bad magic, 2 on error
+/*
+ * Convert tag data to python object
  */
-static int dressedHeaderGetEntry(Header h, rpmTag tag, rpmTagType *type,
-	void **p, rpm_count_t *c)
+static PyObject * td2py(rpmtd td)
 {
-    switch (tag) {
-    case RPMTAG_GROUP:
-    case RPMTAG_DESCRIPTION:
-    case RPMTAG_SUMMARY:
-    {	char *fmt;
-	const char *msgstr, *errstr;
+    PyObject *res = NULL;
+    char *str = NULL;
 
-	fmt = rstrscat(NULL, "%{", rpmTagGetName(tag), "}\n", NULL);
-	
-	/* XXX FIXME: memory leak. */
-        msgstr = headerFormat(h, fmt, &errstr);
-	free(fmt);
-	if (msgstr) {
-	    *p = (void *) msgstr;
-	    if (type)	*type = RPM_STRING_TYPE;
-	    if (c)	*c = 1;
-	    return 1;
-	} else {
-	    if (c)	*c = 0;
-	    return 0;
-	}
-    }	break;
-
-    default:
-	return headerGetEntry(h, tag, type, p, c);
-	break;
-    }
-}
-
-/** \ingroup py_c
- */
-static PyObject * hdr_subscript(hdrObject * s, PyObject * item)
-{
-    rpmTagType tagtype, type;
-    rpmTag tag = RPMTAG_NOT_FOUND;
-    rpm_count_t count, i;
-    rpm_data_t data;
-    PyObject * o, * metao;
-    char ** stringArray;
-    int forceArray = 0;
-    int freeData = 0;
-    char * str;
-    const struct headerSprintfExtension_s * ext = NULL;
-    const struct headerSprintfExtension_s * extensions = rpmHeaderFormats;
-
-    if (PyCObject_Check (item))
-        ext = PyCObject_AsVoidPtr(item);
-    else
-	tag = tagNumFromPyObject (item);
-    if (tag == RPMTAG_NOT_FOUND && PyString_Check(item)) {
-	/* if we still don't have the tag, go looking for the header
-	   extensions */
-	str = PyString_AsString(item);
-	while (extensions->name) {
-	    if (extensions->type == HEADER_EXT_TAG
-	     && !rstrcasecmp(extensions->name + 7, str)) {
-		ext = extensions;
-	    }
-	    extensions++;
-	}
-    }
-
-    /* Retrieve data from extension or header. */
-    if (ext) {
-        ext->u.tagFunction(s->h, &type, &data, &count, &freeData);
-    } else {
-        if (tag == RPMTAG_NOT_FOUND) {
-            PyErr_SetString(PyExc_KeyError, "unknown header tag");
-            return NULL;
-        }
-        
-	if (!dressedHeaderGetEntry(s->h, tag, &type, &data, &count)) {
-	    switch (tag) {
-	    case RPMTAG_EPOCH:
-	    case RPMTAG_NAME:
-	    case RPMTAG_VERSION:
-	    case RPMTAG_RELEASE:
-	    case RPMTAG_ARCH:
-	    case RPMTAG_OS:
-		Py_INCREF(Py_None);
-		return Py_None;
-		break;
-	    default:
-		return PyList_New(0);
-		break;
-	    }
-	}
-    }
-
-    tagtype = rpmTagGetType(tag); 
-#if NOTYET
-    /* this blows up with header extension types */
-    type = tagtype & RPM_MASK_TYPE;
-#endif
-    forceArray = (tagtype & RPM_MASK_RETURN_TYPE) == RPM_ARRAY_RETURN_TYPE;
-    freeData = (tagtype & RPM_MASK_TYPE) == RPM_I18NSTRING_TYPE;
-
-    switch (type) {
-    case RPM_BIN_TYPE:
-	o = PyString_FromStringAndSize(data, count);
-	break;
-
-    case RPM_INT32_TYPE:
-	if (count != 1 || forceArray) {
-	    metao = PyList_New(0);
-	    for (i = 0; i < count; i++) {
-		o = PyInt_FromLong(((int *) data)[i]);
-		PyList_Append(metao, o);
-		Py_DECREF(o);
-	    }
-	    o = metao;
-	} else {
-	    o = PyInt_FromLong(*((int *) data));
-	}
-	break;
-
-    case RPM_CHAR_TYPE:
-    case RPM_INT8_TYPE:
-	if (count != 1 || forceArray) {
-	    metao = PyList_New(0);
-	    for (i = 0; i < count; i++) {
-		o = PyInt_FromLong(((char *) data)[i]);
-		PyList_Append(metao, o);
-		Py_DECREF(o);
-	    }
-	    o = metao;
-	} else {
-	    o = PyInt_FromLong(*((char *) data));
-	}
-	break;
-
-    case RPM_INT16_TYPE:
-	if (count != 1 || forceArray) {
-	    metao = PyList_New(0);
-	    for (i = 0; i < count; i++) {
-		o = PyInt_FromLong(((short *) data)[i]);
-		PyList_Append(metao, o);
-		Py_DECREF(o);
-	    }
-	    o = metao;
-	} else {
-	    o = PyInt_FromLong(*((short *) data));
-	}
-	break;
-
-    case RPM_STRING_ARRAY_TYPE:
-	stringArray = data;
-
-	metao = PyList_New(0);
-	for (i = 0; i < count; i++) {
-	    o = PyString_FromString(stringArray[i]);
-	    PyList_Append(metao, o);
-	    Py_DECREF(o);
-	}
-	free (stringArray);
-	o = metao;
-	break;
-
+    switch (rpmtdType(td)) {
     case RPM_STRING_TYPE:
     case RPM_I18NSTRING_TYPE:
-	if (count != 1 || forceArray) {
-	    stringArray = data;
-
-	    metao = PyList_New(0);
-	    for (i=0; i < count; i++) {
-		o = PyString_FromString(stringArray[i]);
-		PyList_Append(metao, o);
-		Py_DECREF(o);
-	    }
-	    o = metao;
-	} else {
-	    o = PyString_FromString(data);
-	    if (freeData)
-		free (data);
-	}
+    case RPM_STRING_ARRAY_TYPE:
+	res = PyString_FromString(rpmtdGetString(td));
 	break;
-
+    case RPM_INT32_TYPE:
+	res = PyInt_FromLong(*rpmtdGetUint32(td));
+	break;
+    case RPM_INT16_TYPE:
+	res = PyInt_FromLong(*rpmtdGetUint16(td));
+	break;
+    case RPM_BIN_TYPE:
+	str = rpmtdToString(td);
+	res = PyString_FromString(str);
+	free(str);
+	break;
     default:
-	PyErr_SetString(PyExc_TypeError, "unsupported type in header");
-	return NULL;
+	PyErr_SetString(PyExc_KeyError, "unhandled data type");
+	break;
     }
+    return res;
+}
 
-    return o;
+static PyObject * hdr_subscript(hdrObject * s, PyObject * item)
+{
+    PyObject *res = NULL;
+    rpmTag tag = tagNumFromPyObject(item);
+    rpmTagReturnType retype;
+    rpmtd td = NULL;
+
+    if (tag == RPMTAG_NOT_FOUND) {
+	PyErr_SetString(PyExc_KeyError, "unknown header tag");
+	goto exit;
+    }
+	
+    retype = rpmTagGetType(tag) & RPM_MASK_RETURN_TYPE;
+
+    printf("hdr subsc: %p -> %d\n", s, tag);
+    td = rpmtdNew();
+    
+    if (!headerGet(s->h, tag, td, HEADERGET_EXT)) {
+	/* if not found, return empty list for arrays and None for others */
+	if (retype == RPM_ARRAY_RETURN_TYPE) {
+	    res = PyList_New(0);
+	    goto exit;
+	} else {
+	    Py_INCREF(Py_None);
+	    res = Py_None;
+	    goto exit;
+	}
+    }		
+
+    if (retype == RPM_ARRAY_RETURN_TYPE) {
+	res = PyList_New(0);
+	while (rpmtdNext(td) >= 0) {
+	    PyList_Append(res, td2py(td));
+	}
+    } else {
+	res = td2py(td);
+    }
+    rpmtdFreeData(td);
+
+exit:
+    rpmtdFree(td);
+    return res;
 }
 
 static PyObject * hdr_getattro(PyObject * o, PyObject * n)
