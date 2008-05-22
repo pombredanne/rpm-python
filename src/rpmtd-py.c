@@ -5,6 +5,7 @@
 #include <rpm/rpmtd.h>
 
 #include "rpmtd-py.h"
+#include "header-py.h"
 #include "rpmdebug-py.h"
 
 /** \ingroup python
@@ -75,6 +76,33 @@ static void rpmtd_dealloc(rpmtdObject * s)
     }
 }
 
+static PyObject *rpmtd_new(PyTypeObject *subtype, 
+			   PyObject *args, PyObject *kwds)
+{
+    char *kwlist[] = {"tag", NULL};
+    PyObject *pytag;
+    rpmTag tag;
+    rpmtd td;
+    rpmtdObject *self = PyObject_New(rpmtdObject, subtype);
+
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O", kwlist, &pytag))
+	return NULL;
+
+    tag = tagNumFromPyObject(pytag);
+    if (tag == RPMTAG_NOT_FOUND) {
+	PyErr_SetString(PyExc_TypeError, 
+			"can't create container for unknown tag");
+	return NULL;
+    }
+
+    td = rpmtdNew();
+    td->tag = tag;
+    td->type = rpmTagGetType(tag) & RPM_MASK_TYPE;
+
+    self->td = td;
+    return (PyObject *)self;
+}
+
 /**
  */
 static char rpmtd_doc[] =
@@ -125,7 +153,7 @@ PyTypeObject rpmtd_Type = {
 	0,				/* tp_dictoffset */
 	0,				/* tp_init */
 	0,				/* tp_alloc */
-	0,				/* tp_new */
+	rpmtd_new,			/* tp_new */
 	0,				/* tp_free */
 	0,				/* tp_is_gc */
 };
