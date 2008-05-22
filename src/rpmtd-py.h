@@ -22,5 +22,6 @@ struct rpmtdObject_s {
 
 extern PyTypeObject rpmtd_Type;
 
+PyObject * rpmtd_ItemAsPyobj(rpmtd td);
 rpmtdObject * rpmtd_Wrap(rpmtd td);
 #endif

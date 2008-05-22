@@ -36,6 +36,38 @@ static PyObject *rpmtd_iternext(rpmtdObject *self)
     return next;
 }
 
+/*
+ * Convert single tag data item to python object of suitable type
+ */
+PyObject * rpmtd_ItemAsPyobj(rpmtd td)
+{
+    PyObject *res = NULL;
+    char *str = NULL;
+
+    switch (rpmtdType(td)) {
+    case RPM_STRING_TYPE:
+    case RPM_I18NSTRING_TYPE:
+    case RPM_STRING_ARRAY_TYPE:
+	res = PyString_FromString(rpmtdGetString(td));
+	break;
+    case RPM_INT32_TYPE:
+	res = PyInt_FromLong(*rpmtdGetUint32(td));
+	break;
+    case RPM_INT16_TYPE:
+	res = PyInt_FromLong(*rpmtdGetUint16(td));
+	break;
+    case RPM_BIN_TYPE:
+	str = rpmtdFormat(td, RPMTD_FORMAT_STRING, NULL);
+	res = PyString_FromString(str);
+	free(str);
+	break;
+    default:
+	PyErr_SetString(PyExc_KeyError, "unhandled data type");
+	break;
+    }
+    return res;
+}
+
 static PyObject *rpmtd_Format(rpmtdObject *self, PyObject *args, PyObject *kwds)
 {
     char *kwlist[] = {"fmt", NULL};

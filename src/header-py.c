@@ -318,37 +318,6 @@ rpmTag tagNumFromPyObject (PyObject *item)
     return RPMTAG_NOT_FOUND;
 }
 
-/*
- * Convert tag data to python object
- */
-static PyObject * td2py(rpmtd td)
-{
-    PyObject *res = NULL;
-    char *str = NULL;
-
-    switch (rpmtdType(td)) {
-    case RPM_STRING_TYPE:
-    case RPM_I18NSTRING_TYPE:
-    case RPM_STRING_ARRAY_TYPE:
-	res = PyString_FromString(rpmtdGetString(td));
-	break;
-    case RPM_INT32_TYPE:
-	res = PyInt_FromLong(*rpmtdGetUint32(td));
-	break;
-    case RPM_INT16_TYPE:
-	res = PyInt_FromLong(*rpmtdGetUint16(td));
-	break;
-    case RPM_BIN_TYPE:
-	str = rpmtdFormat(td, RPMTD_FORMAT_STRING, NULL);
-	res = PyString_FromString(str);
-	free(str);
-	break;
-    default:
-	PyErr_SetString(PyExc_KeyError, "unhandled data type");
-	break;
-    }
-    return res;
-}
 
 static PyObject * hdr_subscript(hdrObject * s, PyObject * item)
 {
@@ -380,10 +349,10 @@ static PyObject * hdr_subscript(hdrObject * s, PyObject * item)
     if (retype == RPM_ARRAY_RETURN_TYPE) {
 	res = PyList_New(0);
 	while (rpmtdNext(td) >= 0) {
-	    PyList_Append(res, td2py(td));
+	    PyList_Append(res, rpmtd_ItemAsPyobj(td));
 	}
     } else {
-	res = td2py(td);
+	res = rpmtd_ItemAsPyobj(td);
     }
     rpmtdFreeData(td);
 
