@@ -68,6 +68,27 @@ PyObject * rpmtd_ItemAsPyobj(rpmtd td)
     return res;
 }
 
+PyObject *rpmtd_AsPyobj(rpmtd td)
+{
+    PyObject *res = NULL;
+    rpmTagType type = rpmTagGetType(td->tag);
+    int array = ((type & RPM_MASK_RETURN_TYPE) == RPM_ARRAY_RETURN_TYPE);
+
+    if (!array && rpmtdCount(td) < 1) {
+	Py_RETURN_NONE;
+    }
+    
+    if (array) {
+	res = PyList_New(0);
+	while (rpmtdNext(td) >= 0) {
+	    PyList_Append(res, rpmtd_ItemAsPyobj(td));
+	}
+    } else {
+	res = rpmtd_ItemAsPyobj(td);
+    }
+    return res;
+}
+
 static PyObject *rpmtd_Format(rpmtdObject *self, PyObject *args, PyObject *kwds)
 {
     char *kwlist[] = {"fmt", NULL};
