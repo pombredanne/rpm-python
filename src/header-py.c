@@ -330,8 +330,6 @@ static PyObject * hdr_subscript(hdrObject * s, PyObject * item)
     }
 	
     retype = rpmTagGetType(tag) & RPM_MASK_RETURN_TYPE;
-
-    printf("hdr subsc: %p -> %d\n", s, tag);
     td = rpmtdNew();
     
     if (!headerGet(s->h, tag, td, HEADERGET_EXT)) {
