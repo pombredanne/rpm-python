@@ -173,6 +173,32 @@ static void rpm_exithook(void)
    rpmdbCheckTerminate(1);
 }
 
+/*
+ * Add rpm tag dictionaries to the module
+ */
+static void addRpmTags(PyObject *module)
+{
+    PyObject *pyval, *pyname, *dict = PyDict_New();
+    rpmtd names = rpmTagGetNames(1);
+    const char *tagname, *shortname;
+    rpmTag tagval;
+
+    while ((tagname = rpmtdNextString(names))) {
+	shortname = tagname + strlen("RPMTAG_");
+	tagval = rpmTagGetValue(shortname);
+
+	PyModule_AddIntConstant(module, tagname, tagval);
+	pyval = PyInt_FromLong(tagval);
+	pyname = PyString_FromString(shortname);
+	PyDict_SetItem(dict, pyval, pyname);
+	Py_DECREF(pyval);
+	Py_DECREF(pyname);
+    }
+    PyModule_AddObject(module, "tagnames", dict);
+    rpmtdFreeData(names);
+    rpmtdFree(names);
+}
+
 /**
  */
 static char rpm__doc__[] =
@@ -183,10 +209,6 @@ void init_rpmng(void);	/* XXX eliminate gcc warning */
  */
 void init_rpmng(void)
 {
-    PyObject *o, * tag = NULL, * dict;
-    int i, extnum;
-    const struct headerSprintfExtension_s * extensions = rpmHeaderFormats;
-    const struct headerSprintfExtension_s * ext;
     PyObject * m;
 
     if (PyType_Ready(&hdr_Type) < 0) return;
@@ -239,40 +261,7 @@ void init_rpmng(void)
     pyrpmLog = PyObject_New(rpmlogObject, &rpmlog_Type);    
     PyModule_AddObject(m, "log", (PyObject *) pyrpmLog);
 
-    dict = PyDict_New();
-
-    for (i = 0; i < rpmTagTableSize; i++) {
-    	PyModule_AddIntConstant(m, rpmTagTable[i].name, rpmTagTable[i].val);
-
-	tag = PyInt_FromLong(rpmTagTable[i].val);
-	o = PyString_FromString(rpmTagTable[i].name + 7);
-	PyDict_SetItem(dict, tag, o);
-	Py_DECREF(tag);
-	Py_DECREF(o);
-    }
-
-    /*
-     * XXX this is pretty silly and broken but add some uniqueish 
-     * number for extensions too..
-     */
-    extnum = 10000;
-    while (extensions->name) {
-	if (extensions->type == HEADER_EXT_TAG) {
-            ext = extensions;
-    	    PyModule_AddIntConstant(m, ext->name, extnum);
-
-	    tag = PyInt_FromLong(extnum);
-	    o = PyString_FromString(ext->name + 7);
-	    PyDict_SetItem(dict, tag, o);
-	    Py_DECREF(tag);
-	    Py_DECREF(o);
-
-	    extnum++;
-        }
-        extensions++;
-    }
-
-    PyModule_AddObject(m, "tagnames", dict);
+    addRpmTags(m);
 
 #define REGISTER_ENUM(val) \
     PyModule_AddIntConstant(m, #val, val);
