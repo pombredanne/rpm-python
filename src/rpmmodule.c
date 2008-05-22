@@ -17,6 +17,7 @@
 #include "rpmps-py.h"
 #include "rpmmacro-py.h"
 #include "rpmte-py.h"
+#include "rpmtd-py.h"
 #include "rpmts-py.h"
 #include "rpmlog-py.h"
 #include "rpmdebug-py.h"
@@ -218,6 +219,7 @@ void init_rpmng(void)
     if (PyType_Ready(&rpmps_Type) < 0) return;
     if (PyType_Ready(&rpmte_Type) < 0) return;
     if (PyType_Ready(&rpmts_Type) < 0) return;
+    if (PyType_Ready(&rpmtd_Type) < 0) return;
     if (PyType_Ready(&rpmlog_Type) < 0) return;
 
     m = Py_InitModule3("_rpmng", rpmModuleMethods, rpm__doc__);
@@ -257,6 +259,9 @@ void init_rpmng(void)
 
     Py_INCREF(&rpmts_Type);
     PyModule_AddObject(m, "ts", (PyObject *) &rpmts_Type);
+
+    Py_INCREF(&rpmtd_Type);
+    PyModule_AddObject(m, "td", (PyObject *) &rpmtd_Type);
 
     pyrpmLog = PyObject_New(rpmlogObject, &rpmlog_Type);    
     PyModule_AddObject(m, "log", (PyObject *) pyrpmLog);
