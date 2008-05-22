@@ -306,7 +306,7 @@ static PyObject * td2py(rpmtd td)
 	res = PyInt_FromLong(*rpmtdGetUint16(td));
 	break;
     case RPM_BIN_TYPE:
-	str = rpmtdToString(td);
+	str = rpmtdFormat(td, RPMTD_FORMAT_STRING, NULL);
 	res = PyString_FromString(str);
 	free(str);
 	break;
