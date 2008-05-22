@@ -36,6 +36,16 @@ static PyObject *rpmtd_iternext(rpmtdObject *self)
     return next;
 }
 
+static PyObject *rpmtd_str(rpmtdObject *self)
+{
+    char *str = rpmtdFormat(self->td, RPMTD_FORMAT_STRING, NULL);
+    if (str) {
+	return PyString_FromString(str);
+    } else {
+	Py_RETURN_NONE;
+    }
+}
+
 /*
  * Convert single tag data item to python object of suitable type
  */
@@ -184,7 +194,7 @@ PyTypeObject rpmtd_Type = {
 	&rpmtd_as_mapping,		/* tp_as_mapping */
 	0,				/* tp_hash */
 	0,				/* tp_call */
-	0,				/* tp_str */
+	rpmtd_str,			/* tp_str */
 	PyObject_GenericGetAttr,	/* tp_getattro */
 	PyObject_GenericSetAttr,	/* tp_setattro */
 	0,				/* tp_as_buffer */
