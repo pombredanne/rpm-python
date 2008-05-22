@@ -261,6 +261,21 @@ PyObject * hdrGet(hdrObject *self, PyObject *args, PyObject *kwds)
     Py_RETURN_NONE;
 }
 
+PyObject *hdrPut(hdrObject *self, PyObject *args, PyObject *kwds)
+{
+    int rc;
+    char *kwlist[] = {"td", "flags", NULL};
+    headerPutFlags flags;
+    rpmtdObject *tdo;
+
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O!|i", kwlist, 
+				     &rpmtd_Type, &tdo, &flags)) {
+	return NULL;
+    }
+    rc = headerPut(self->h, tdo->td, HEADERPUT_DEFAULT);
+    return PyBool_FromLong(rc);
+}
+
 /**
  */
 static int hdr_compare(hdrObject * a, hdrObject * b)
@@ -277,6 +292,8 @@ static long hdr_hash(PyObject * h)
  */
 static struct PyMethodDef hdr_methods[] = {
     {"get",		(PyCFunction) hdrGet,	METH_VARARGS|METH_KEYWORDS,
+	NULL },
+    {"put",		(PyCFunction) hdrPut,	METH_VARARGS|METH_KEYWORDS,
 	NULL },
     {"keys",		(PyCFunction) hdrKeyList,	METH_NOARGS,
 	NULL },
