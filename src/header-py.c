@@ -10,6 +10,7 @@
 #include "header-py.h"
 #include "rpmds-py.h"
 #include "rpmfi-py.h"
+#include "rpmtd-py.h"
 #include "rpmdebug-py.h"
 
 /** \ingroup python
@@ -230,6 +231,36 @@ static PyObject * hdrSprintf(hdrObject * s, PyObject * args, PyObject * kwds)
     return result;
 }
 
+/*
+ * XXX TODO: 
+ * - muchos overlap with hdr_subsrcipt(), unify... 
+ * - flags unused for now, should support extension enable/disable and raw
+ */
+PyObject * hdrGet(hdrObject *self, PyObject *args, PyObject *kwds)
+{
+    PyObject *pytag;
+    char *kwlist[] = {"tag", "flags", NULL};
+    char *flags;
+    rpmtd td = NULL;
+    rpmTag tag; 
+
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O|i", kwlist, &pytag, &flags))
+	return NULL;
+
+    tag = tagNumFromPyObject(pytag);
+    if (tag == RPMTAG_NOT_FOUND) {
+	PyErr_SetString(PyExc_KeyError, "unknown header tag");
+	return NULL;
+    }
+
+    td = rpmtdNew();
+    if (headerGet(self->h, tag, td, HEADERGET_EXT)) {
+	return (PyObject*) rpmtd_Wrap(td);
+    }
+    rpmtdFree(td);
+    Py_RETURN_NONE;
+}
+
 /**
  */
 static int hdr_compare(hdrObject * a, hdrObject * b)
@@ -245,6 +276,8 @@ static long hdr_hash(PyObject * h)
 /** \ingroup py_c
  */
 static struct PyMethodDef hdr_methods[] = {
+    {"get",		(PyCFunction) hdrGet,	METH_VARARGS|METH_KEYWORDS,
+	NULL },
     {"keys",		(PyCFunction) hdrKeyList,	METH_NOARGS,
 	NULL },
     {"unload",		(PyCFunction) hdrUnload,	METH_VARARGS|METH_KEYWORDS,
