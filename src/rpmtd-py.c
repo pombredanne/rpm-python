@@ -115,10 +115,35 @@ static PyObject *rpmtd_Format(rpmtdObject *self, PyObject *args, PyObject *kwds)
     Py_RETURN_NONE;
 }
 
+static PyObject *rpmtd_setTag(rpmtdObject *self, PyObject *args, PyObject *kwds)
+{
+    PyObject *pytag;
+    char *kwlist[] = {"tag", NULL};
+    rpmTag tag;
+
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O", kwlist, &pytag))
+	return NULL;
+
+    tag = tagNumFromPyObject(pytag);
+    if (tag == RPMTAG_NOT_FOUND) {
+	PyErr_SetString(PyExc_KeyError, "unknown header tag");
+	return NULL;
+    }
+    
+    /* tag got just validated, so settag failure must be from type mismatch */
+    if (!rpmtdSetTag(self->td, tag)) {
+	PyErr_SetString(PyExc_TypeError, "tag type incompatible with data");
+	return NULL;
+    }
+    Py_RETURN_TRUE;
+}
+
 /** \ingroup py_c
  */
 static struct PyMethodDef rpmtd_methods[] = {
     {"format",	    (PyCFunction) rpmtd_Format,	METH_VARARGS|METH_KEYWORDS,
+	NULL },
+    {"setTag",	    (PyCFunction) rpmtd_setTag,	METH_VARARGS|METH_KEYWORDS,
 	NULL },
     {NULL,		NULL}		/* sentinel */
 };
