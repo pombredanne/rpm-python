@@ -562,36 +562,39 @@ int rpmMergeHeaders(PyObject * list, FD_t fd, int matchTag)
 {
     Header h;
     HeaderIterator hi;
-    int32_t * newMatch;
-    int32_t * oldMatch;
+    rpmTag newMatch, oldMatch;
     hdrObject * hdr;
     rpm_count_t count = 0;
-    rpmtd td = NULL;
+    int rc = 1; /* assume failure */
+    rpmtd td = rpmtdNew();
 
     Py_BEGIN_ALLOW_THREADS
     h = headerRead(fd, HEADER_MAGIC_YES);
     Py_END_ALLOW_THREADS
 
     while (h) {
-	if (!headerGetEntry(h, matchTag, NULL, (void **) &newMatch, NULL)) {
+	if (!headerGet(h, matchTag, td, HEADERGET_MINMEM)) {
 	    PyErr_SetString(pyrpmError, "match tag missing in new header");
-	    return 1;
+	    goto exit;
 	}
+	newMatch = rpmtdTag(td);
+	rpmtdFreeData(td);
 
 	hdr = (hdrObject *) PyList_GetItem(list, count++);
-	if (!hdr) return 1;
+	if (!hdr) goto exit;
 
-	if (!headerGetEntry(hdr->h, matchTag, NULL, (void **) &oldMatch, NULL)) {
+	if (!headerGet(hdr->h, matchTag, td, HEADERGET_MINMEM)) {
 	    PyErr_SetString(pyrpmError, "match tag missing in new header");
-	    return 1;
+	    goto exit;
 	}
+	oldMatch = rpmtdTag(td);
+	rpmtdFreeData(td);
 
-	if (*newMatch != *oldMatch) {
+	if (newMatch != oldMatch) {
 	    PyErr_SetString(pyrpmError, "match tag mismatch");
-	    return 1;
+	    goto exit;
 	}
 
-	td = rpmtdNew();	
 	for (hi = headerInitIterator(h); headerNext(hi, td); rpmtdFreeData(td))
 	{
 	    /* could be dupes */
@@ -601,14 +604,17 @@ int rpmMergeHeaders(PyObject * list, FD_t fd, int matchTag)
 
 	headerFreeIterator(hi);
 	h = headerFree(h);
-	td = rpmtdFree(td);
 
 	Py_BEGIN_ALLOW_THREADS
 	h = headerRead(fd, HEADER_MAGIC_YES);
 	Py_END_ALLOW_THREADS
     }
+    rc = 0;
 
-    return 0;
+exit:
+    td = rpmtdFree(td);
+
+    return rc;
 }
 
 PyObject *
