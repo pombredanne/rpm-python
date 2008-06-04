@@ -180,7 +180,8 @@ static void rpm_exithook(void)
 static void addRpmTags(PyObject *module)
 {
     PyObject *pyval, *pyname, *dict = PyDict_New();
-    rpmtd names = rpmTagGetNames(1);
+    rpmtd names = rpmtdNew();
+    rpmTagGetNames(names, 1);
     const char *tagname, *shortname;
     rpmTag tagval;
 
