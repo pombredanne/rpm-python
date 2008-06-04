@@ -76,20 +76,16 @@ rpmfiFile_FState(rpmfiFileObject * s)
 
 /* XXX rpmfiMD5 */
 static PyObject *
-rpmfiFile_MD5(rpmfiFileObject * s)
+rpmfiFile_Digest(rpmfiFileObject * s)
 {
-    const unsigned char * MD5;
-    char fmd5[33];
-    char * t;
-    int i;
-
-    MD5 = rpmfiMD5(s->fi);
-    t = fmd5;
-    if (MD5 != NULL)
-    for (i = 0; i < 16; i++, t += 2)
-	sprintf(t, "%02x", MD5[i]);
-    *t = '\0';
-    return PyString_FromString(fmd5);
+    char *digest = rpmfiFDigestHex(s->fi, NULL);
+    if (digest) {
+	PyObject *dig = PyString_FromString(digest);
+	free(digest);
+	return dig;
+    } else {
+	Py_RETURN_NONE;
+    }
 }
 
 static PyObject *
@@ -205,7 +201,9 @@ static struct PyMethodDef rpmfiFile_methods[] = {
 	NULL},
  {"FState",	(PyCFunction)rpmfiFile_FState,	METH_NOARGS,
 	NULL},
- {"MD5",	(PyCFunction)rpmfiFile_MD5,		METH_NOARGS,
+ {"MD5",	(PyCFunction)rpmfiFile_Digest,		METH_NOARGS,
+	NULL},
+ {"Digest",	(PyCFunction)rpmfiFile_Digest,		METH_NOARGS,
 	NULL},
  {"FLink",	(PyCFunction)rpmfiFile_FLink,	METH_NOARGS,
 	NULL},
