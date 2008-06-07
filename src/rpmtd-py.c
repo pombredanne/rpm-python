@@ -60,6 +60,9 @@ PyObject * rpmtd_ItemAsPyobj(rpmtd td)
     case RPM_STRING_ARRAY_TYPE:
 	res = PyString_FromString(rpmtdGetString(td));
 	break;
+    case RPM_INT64_TYPE:
+	res = PyLong_FromLongLong(*rpmtdGetUint64(td));
+	break;
     case RPM_INT32_TYPE:
 	res = PyInt_FromLong(*rpmtdGetUint32(td));
 	break;
