@@ -20,6 +20,7 @@
 #include "rpmtd-py.h"
 #include "rpmts-py.h"
 #include "rpmlog-py.h"
+#include "rpmkeyring-py.h"
 #include "rpmdebug-py.h"
 
 /** \ingroup python
@@ -222,6 +223,8 @@ void init_rpmng(void)
     if (PyType_Ready(&rpmts_Type) < 0) return;
     if (PyType_Ready(&rpmtd_Type) < 0) return;
     if (PyType_Ready(&rpmlog_Type) < 0) return;
+    if (PyType_Ready(&rpmKeyring_Type) < 0) return;
+    if (PyType_Ready(&rpmPubkey_Type) < 0) return;
 
     m = Py_InitModule3("_rpmng", rpmModuleMethods, rpm__doc__);
     if (m == NULL)
@@ -266,6 +269,12 @@ void init_rpmng(void)
 
     pyrpmLog = PyObject_New(rpmlogObject, &rpmlog_Type);    
     PyModule_AddObject(m, "log", (PyObject *) pyrpmLog);
+
+    Py_INCREF(&rpmPubkey_Type);
+    PyModule_AddObject(m, "pubkey", (PyObject *) &rpmPubkey_Type);
+
+    Py_INCREF(&rpmKeyring_Type);
+    PyModule_AddObject(m, "keyring", (PyObject *) &rpmKeyring_Type);
 
     addRpmTags(m);
 
