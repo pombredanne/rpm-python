@@ -322,9 +322,6 @@ rpmts_Check(rpmtsObject * s, PyObject * args, PyObject * kwds)
     xx = rpmtsCheck(s->ts);
     ps = rpmtsProblems(s->ts);
 
-    if (cbInfo.cb)
-	xx = rpmtsSetSolveCallback(s->ts, rpmtsSolve, NULL);
-
     PyEval_RestoreThread(cbInfo._save);
 
     if (ps != NULL) {
