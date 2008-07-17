@@ -17,6 +17,7 @@
 #include "rpmps-py.h"
 #include "rpmte-py.h"
 #include "rpmts-py.h"
+#include "rpmkeyring-py.h"
 #include "rpmdebug-py.h"
 
 /** \ingroup python
@@ -997,6 +998,40 @@ rpmts_Next(rpmtsObject * s)
     return result;
 }
 
+static PyObject *rpmts_setKeyring(rpmtsObject *self, 
+				  PyObject *args, PyObject *kwds)
+{
+    rpmKeyringObject *keyring;
+    char *kwlist[] = { "keyring", NULL };
+    int rc = -1;
+
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O", kwlist, &keyring))
+	return NULL;
+
+    if (!PyObject_TypeCheck(keyring, &rpmKeyring_Type)) {
+	PyErr_SetString(PyExc_TypeError, "keyring expected");
+	return NULL;
+    }
+
+    rc = rpmtsSetKeyring(self->ts, keyring->keyring);
+    /* XXX FIXME: this isn't right but prevents it from blowing up... */
+    Py_INCREF(keyring);
+
+    return PyInt_FromLong(rc);
+}
+
+static PyObject *rpmts_getKeyring(rpmtsObject *self, 
+				  PyObject *args, PyObject *kwds)
+{
+    char *kwlist[] = { "autoload", NULL };
+    int autoload;
+
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "i", kwlist, &autoload))
+	return NULL;
+
+    return (PyObject *) rpmKeyring_Wrap(rpmtsGetKeyring(self->ts, autoload));
+}
+
 /**
  */
 static rpmmiObject *
@@ -1129,6 +1164,10 @@ static struct PyMethodDef rpmts_methods[] = {
  {"next",		(PyCFunction)rpmts_Next,	METH_NOARGS,
 "ts.next() -> te\n\
 - Retrieve next transaction set element.\n" },
+ {"setKeyring",(PyCFunction) rpmts_setKeyring,	METH_VARARGS|METH_KEYWORDS,
+	NULL },
+ {"getKeyring",(PyCFunction) rpmts_getKeyring,	METH_VARARGS|METH_KEYWORDS,
+	NULL },
     {NULL,		NULL}		/* sentinel */
 };
 

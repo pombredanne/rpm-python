@@ -30,4 +30,5 @@ struct rpmKeyringObject_s {
 extern PyTypeObject rpmKeyring_Type;
 extern PyTypeObject rpmPubkey_Type;
 
+rpmKeyringObject * rpmKeyring_Wrap(rpmKeyring keyring);
 #endif
