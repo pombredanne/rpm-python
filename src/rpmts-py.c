@@ -1014,8 +1014,6 @@ static PyObject *rpmts_setKeyring(rpmtsObject *self,
     }
 
     rc = rpmtsSetKeyring(self->ts, keyring->keyring);
-    /* XXX FIXME: this isn't right but prevents it from blowing up... */
-    Py_INCREF(keyring);
 
     return PyInt_FromLong(rc);
 }

@@ -15,9 +15,8 @@
  */
 static void rpmPubkey_dealloc(rpmPubkeyObject * self)
 {
-    if (self && !self->kref) {
-	rpmPubkeyFree(self->pubkey);
-	self->pubkey = NULL;
+    if (self) {
+	self->pubkey = rpmPubkeyFree(self->pubkey);
 	PyObject_Del(self);
     }
 }
@@ -46,7 +45,6 @@ static PyObject *rpmPubkey_new(PyTypeObject *subtype,
 
     self = PyObject_New(rpmPubkeyObject, subtype);
     self->pubkey = pubkey;
-    self->kref = 0;
     return (PyObject *)self;
 }
 
@@ -96,10 +94,6 @@ static PyObject *rpmKeyring_addKey(rpmKeyringObject *self,
     }
 
     rc = rpmKeyringAddKey(self->keyring, pubkey->pubkey);
-    if (rc == 0) {
-	/* the keyring owns any keys added to it, prevent automatic freeing */
-	pubkey->kref = 1;
-    }
     return PyInt_FromLong(rc);
 };
 
