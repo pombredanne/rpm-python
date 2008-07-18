@@ -312,6 +312,15 @@ static struct PyMethodDef hdr_methods[] = {
     {NULL,		NULL}		/* sentinel */
 };
 
+static PyObject *hdr_new(PyTypeObject *subtype,
+			 PyObject *args, PyObject *kwds)
+{
+    hdrObject *self = PyObject_New(hdrObject, &hdr_Type);
+    self->h = headerNew();
+    
+    return (PyObject *)self;
+}
+
 /** \ingroup py_c
  */
 static void hdr_dealloc(hdrObject * s)
@@ -425,7 +434,7 @@ PyTypeObject hdr_Type = {
 	0,				/* tp_dictoffset */
 	0,				/* tp_init */
 	0,				/* tp_alloc */
-	0,				/* tp_new */
+	hdr_new,			/* tp_new */
 	0,				/* tp_free */
 	0,				/* tp_is_gc */
 };
