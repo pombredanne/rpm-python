@@ -366,6 +366,75 @@ static PyObject * hdr_subscript(hdrObject *self, PyObject *item)
     return res;
 }
 
+static int hdrAppend(Header h, rpmTag tag, PyObject *value)
+{
+    rpmTagType type = rpmTagGetType(tag) & RPM_MASK_TYPE;
+    int rc = 0;
+
+    switch (type) {
+    case RPM_STRING_TYPE:
+    case RPM_I18NSTRING_TYPE:
+    case RPM_STRING_ARRAY_TYPE: {
+	char *str;
+	if ((str = PyString_AsString(value)))
+	    rc = headerPutString(h, tag, str);
+	break;
+	}
+    case RPM_INT64_TYPE: 
+	if (PyLong_Check(value)) {
+	    uint64_t num = PyLong_AsUnsignedLongLong(value);
+	    rc = headerPutUint64(h, tag, &num, 1);
+	}
+	break;
+    case RPM_INT32_TYPE: 
+	if (PyInt_Check(value)) {
+	    uint32_t num = PyInt_AsLong(value);
+	    rc = headerPutUint32(h, tag, &num, 1);
+	}
+	break;
+    case RPM_INT16_TYPE: 
+	if (PyInt_Check(value)) {
+	    uint16_t num = PyInt_AsLong(value);
+	    rc = headerPutUint16(h, tag, &num, 1);
+	}
+	break;
+    /* XXX TODO: handle these too.. */
+    case RPM_BIN_TYPE: 
+    case RPM_INT8_TYPE: 
+    case RPM_CHAR_TYPE: 
+    default:
+	PyErr_SetString(PyExc_KeyError, "unhandled data type");
+	break;
+    }
+    return rc;
+}
+
+static int hdr_ass_subscript(hdrObject *self, PyObject *key, PyObject *value)
+{
+    rpmTag tag = tagNumFromPyObject(key);
+    if (tag == RPMTAG_NOT_FOUND) {
+	PyErr_SetString(PyExc_KeyError, "unknown header tag");
+	return -1;
+    }
+    /* XXX TODO: need to be much more careful about accepted types.. */
+    if (PyList_Check(value)) {
+	Py_ssize_t i, len = PyList_Size(value);
+	for (i = 0; i < len; i++) {
+	    PyObject *item = PyList_GetItem(value, i);
+	    if (hdrAppend(self->h, tag, item) != 1) {
+		PyErr_SetString(PyExc_TypeError, "invalid data for tag");
+		return -1;
+	    }
+	}
+    } else {
+	if (hdrAppend(self->h, tag, value) != 1) {
+	    PyErr_SetString(PyExc_TypeError, "invalid data for tag");
+	    return -1;
+	}
+    }
+    return 0;
+}
+
 static PyObject * hdr_getattro(PyObject * o, PyObject * n)
 {
     PyObject * res;
@@ -377,7 +446,10 @@ static PyObject * hdr_getattro(PyObject * o, PyObject * n)
 
 static int hdr_setattro(PyObject * o, PyObject * n, PyObject * v)
 {
-    return PyObject_GenericSetAttr(o, n, v);
+    int res = PyObject_GenericSetAttr(o, n, v);
+    if (res != 0) 
+	res = hdr_ass_subscript((hdrObject *)o, n, v);
+    return res;
 }
 
 /** \ingroup py_c
@@ -385,7 +457,7 @@ static int hdr_setattro(PyObject * o, PyObject * n, PyObject * v)
 static PyMappingMethods hdr_as_mapping = {
 	(lenfunc) 0,			/* mp_length */
 	(binaryfunc) hdr_subscript,	/* mp_subscript */
-	(objobjargproc)0,		/* mp_ass_subscript */
+	(objobjargproc) hdr_ass_subscript,	/* mp_ass_subscript */
 };
 
 /**
