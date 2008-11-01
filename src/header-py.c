@@ -276,6 +276,18 @@ PyObject *hdrPut(hdrObject *self, PyObject *args, PyObject *kwds)
     return PyBool_FromLong(rc);
 }
 
+PyObject *hdrConvert(hdrObject *self, PyObject *args, PyObject *kwds)
+{
+    char *kwlist[] = {"op", NULL};
+    headerConvOps op;
+
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "i", kwlist, &op)) {
+        return NULL;
+    }
+
+    return PyBool_FromLong(headerConvert(self->h, op));
+}
+
 /**
  */
 static int hdr_compare(hdrObject * a, hdrObject * b)
@@ -300,6 +312,8 @@ static struct PyMethodDef hdr_methods[] = {
     {"unload",		(PyCFunction) hdrUnload,	METH_VARARGS|METH_KEYWORDS,
 	NULL },
     {"sprintf",		(PyCFunction) hdrSprintf,	METH_VARARGS|METH_KEYWORDS,
+	NULL },
+    {"convert",		(PyCFunction) hdrConvert,	METH_VARARGS|METH_KEYWORDS,
 	NULL },
 
     {"dsOfHeader",	(PyCFunction)hdr_dsOfHeader,	METH_NOARGS,
