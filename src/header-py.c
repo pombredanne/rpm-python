@@ -172,6 +172,17 @@ static PyObject * hdrKeyList(hdrObject * s)
     return list;
 }
 
+static PyObject * hdrHasKey(hdrObject *self, PyObject *pytag)
+{
+    rpmTag tag = tagNumFromPyObject(pytag);
+    if (tag == RPMTAG_NOT_FOUND) {
+	PyErr_SetString(PyExc_KeyError, "unknown header tag");
+	return NULL;
+    }
+
+    return PyBool_FromLong(headerIsEntry(self->h, tag));
+}
+
 /** \ingroup py_c
  */
 static PyObject * hdrUnload(hdrObject * s, PyObject * args, PyObject *keywords)
@@ -306,6 +317,8 @@ static struct PyMethodDef hdr_methods[] = {
     {"get",		(PyCFunction) hdrGet,	METH_VARARGS|METH_KEYWORDS,
 	NULL },
     {"put",		(PyCFunction) hdrPut,	METH_VARARGS|METH_KEYWORDS,
+	NULL },
+    {"has_key",		(PyCFunction) hdrHasKey,	METH_O,
 	NULL },
     {"keys",		(PyCFunction) hdrKeyList,	METH_NOARGS,
 	NULL },
