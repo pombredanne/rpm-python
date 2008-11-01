@@ -430,8 +430,15 @@ static int hdr_ass_subscript(hdrObject *self, PyObject *key, PyObject *value)
 	PyErr_SetString(PyExc_KeyError, "unknown header tag");
 	return -1;
     }
+
+    if (value == NULL) {
+	/* XXX raising keyerror here is inconsistent with other methods, wdo? */
+	if (headerDel(self->h, tag)) {
+	    PyErr_SetString(PyExc_KeyError, "no such tag in header");
+	    return -1;
+	}
     /* XXX TODO: need to be much more careful about accepted types.. */
-    if (PyList_Check(value)) {
+    } else if (PyList_Check(value)) {
 	Py_ssize_t i, len = PyList_Size(value);
 	for (i = 0; i < len; i++) {
 	    PyObject *item = PyList_GetItem(value, i);
