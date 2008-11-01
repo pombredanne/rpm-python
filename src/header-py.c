@@ -150,17 +150,18 @@ static PyObject * hdrKeyList(hdrObject * s)
 
 	switch (rpmtdType(td)) {
 	case RPM_BIN_TYPE:
-	case RPM_INT32_TYPE:
 	case RPM_CHAR_TYPE:
 	case RPM_INT8_TYPE:
 	case RPM_INT16_TYPE:
+	case RPM_INT32_TYPE:
+	case RPM_INT64_TYPE:
 	case RPM_STRING_ARRAY_TYPE:
 	case RPM_STRING_TYPE:
+	case RPM_I18NSTRING_TYPE: 
 	    o = PyString_FromString(rpmTagGetName(tag));
 	    PyList_Append(list, o);
 	    Py_DECREF(o);
 	    break;
-	case RPM_I18NSTRING_TYPE: /* hum.. ?`*/
 	case RPM_NULL_TYPE:
 	default:
 	    break;
