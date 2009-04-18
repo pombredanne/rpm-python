@@ -221,7 +221,7 @@ rpmte_FI(rpmteObject * s, PyObject * args, PyObject * kwds)
 	return NULL;
     }
 
-    fi = rpmteFI(s->te, tag);
+    fi = rpmteFI(s->te);
     if (fi == NULL) {
 	Py_INCREF(Py_None);
 	return Py_None;
