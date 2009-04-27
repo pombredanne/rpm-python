@@ -442,7 +442,6 @@ rpmts_CloseDB(rpmtsObject * s)
     debug("(%p) ts %p\n", s, s->ts);
 
     rc = rpmtsCloseDB(s->ts);
-    rpmtsSetDBMode(s->ts, -1);	/* XXX disable lazy opens */
 
     return Py_BuildValue("i", rc);
 }
@@ -1116,8 +1115,7 @@ static struct PyMethodDef rpmts_methods[] = {
   Note: The transaction rpmdb is lazily opened, so ts.openDB() is seldom needed.\n" },
  {"closeDB",	(PyCFunction) rpmts_CloseDB,	METH_NOARGS,
 "ts.closeDB() -> None\n\
-- Close the default transaction rpmdb.\n\
-  Note: ts.closeDB() disables lazy opens, and should hardly ever be used.\n" },
+- Close the default transaction rpmdb.\n" },
  {"initDB",	(PyCFunction) rpmts_InitDB,	METH_NOARGS,
 "ts.initDB() -> None\n\
 - Initialize the default transaction rpmdb.\n\
