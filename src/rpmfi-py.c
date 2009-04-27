@@ -293,26 +293,17 @@ static PyMappingMethods rpmfi_as_mapping = {
 static int rpmfi_init(rpmfiObject * s, PyObject *args, PyObject *kwds)
 {
     hdrObject * ho = NULL;
-    PyObject * to = NULL;
     rpmts ts = NULL;	/* XXX FIXME: fiFromHeader should be a ts method. */
-    rpmTag tagN = RPMTAG_BASENAMES;
     int flags = 0;
-    char * kwlist[] = {"header", "tag", "flags", NULL};
+    char * kwlist[] = {"header", "flags", NULL};
 
     debug("(%p,%p,%p)\n", s, args, kwds);
 
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O!|Oi:rpmfi_init", kwlist,
-	    &hdr_Type, &ho, &to, &flags))
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O!|i:rpmfi_init", kwlist,
+	    &hdr_Type, &ho, &flags))
 	return -1;
 
-    if (to != NULL) {
-	tagN = tagNumFromPyObject(to);
-	if (tagN == -1) {
-	    PyErr_SetString(PyExc_KeyError, "unknown header tag");
-	    return -1;
-	}
-    }
-    s->fi = rpmfiNew(ts, hdrGetHeader(ho), tagN, flags);
+    s->fi = rpmfiNew(ts, hdrGetHeader(ho), -1, flags);
     s->cur = NULL;
 
     return 0;
@@ -462,22 +453,13 @@ rpmfiObject *
 hdr_fiFromHeader(PyObject * s, PyObject * args, PyObject * kwds)
 {
     hdrObject * ho = (hdrObject *)s;
-    PyObject * to = NULL;
     rpmts ts = NULL;	/* XXX FIXME: fiFromHeader should be a ts method. */
-    rpmTag tagN = RPMTAG_BASENAMES;
     int flags = 0;
-    char * kwlist[] = {"tag", "flags", NULL};
+    char * kwlist[] = {"flags", NULL};
 
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "|Oi:fiFromHeader", kwlist,
-	    &to, &flags))
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "|i:fiFromHeader", kwlist,
+	    &flags))
 	return NULL;
 
-    if (to != NULL) {
-	tagN = tagNumFromPyObject(to);
-	if (tagN == -1) {
-	    PyErr_SetString(PyExc_KeyError, "unknown header tag");
-	    return NULL;
-	}
-    }
-    return rpmfi_Wrap( rpmfiNew(ts, hdrGetHeader(ho), tagN, flags) );
+    return rpmfi_Wrap( rpmfiNew(ts, hdrGetHeader(ho), -1, flags) );
 }
