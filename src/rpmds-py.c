@@ -249,15 +249,6 @@ rpmds_Notify(rpmdsObject * s, PyObject * args, PyObject * kwds)
     return Py_None;
 }
 
-/* XXX rpmdsFind uses bsearch on s->ds, so a sort is needed. */
-static PyObject *
-rpmds_Sort(rpmdsObject * s)
-{
-    /* XXX sort on (N,EVR,F) here. */
-    Py_INCREF(Py_None);
-    return Py_None;
-}
-
 static PyObject *
 rpmds_Find(rpmdsObject * s, PyObject * args, PyObject * kwds)
 {
@@ -351,8 +342,6 @@ static struct PyMethodDef rpmds_methods[] = {
  {"SetNoPromote",(PyCFunction)rpmds_SetNoPromote, METH_VARARGS|METH_KEYWORDS,
 	NULL},
  {"Notify",	(PyCFunction)rpmds_Notify,	METH_VARARGS|METH_KEYWORDS,
-	NULL},
- {"Sort",	(PyCFunction)rpmds_Sort,	METH_NOARGS,
 	NULL},
  {"Find",	(PyCFunction)rpmds_Find,	METH_VARARGS|METH_KEYWORDS,
 	NULL},
