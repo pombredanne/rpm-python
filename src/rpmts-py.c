@@ -1066,6 +1066,10 @@ rpmts_Match(rpmtsObject * s, PyObject * args, PyObject * kwds)
 	    PyErr_SetString(PyExc_TypeError, "unknown key type");
 	    return NULL;
 	}
+	/* One of the conversions above failed, exception is set already */
+	if (PyErr_Occurred()) {
+	    return NULL;
+	}
     }
 
     /* XXX If not already opened, open the database O_RDONLY now. */
