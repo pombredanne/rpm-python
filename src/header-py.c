@@ -233,7 +233,7 @@ static PyObject * hdrSprintf(hdrObject * s, PyObject * args, PyObject * kwds)
 
     r = headerFormat(s->h, fmt, &err);
     if (!r) {
-	PyErr_SetString(pyrpmError, err);
+	PyErr_SetString(PyExc_ValueError, err);
 	return NULL;
     }
 
