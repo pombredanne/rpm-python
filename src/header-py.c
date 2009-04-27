@@ -761,8 +761,7 @@ rpmMergeHeadersFromFD(PyObject * self, PyObject * args, PyObject * kwds)
 	return NULL;
     }
 
-    Py_INCREF(Py_None);
-    return Py_None;
+    Py_RETURN_NONE;
 }
 
 /**

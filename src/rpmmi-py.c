@@ -94,8 +94,7 @@ rpmmi_Next(rpmmiObject * s)
     result = rpmmi_iternext(s);
 
     if (result == NULL) {
-        Py_INCREF(Py_None);
-        return Py_None;
+	Py_RETURN_NONE;
     }
     return result;
 }
@@ -148,9 +147,7 @@ rpmmi_Pattern(rpmmiObject * s, PyObject * args, PyObject * kwds)
 
     rpmdbSetIteratorRE(s->mi, tag, type, pattern);
 
-    Py_INCREF (Py_None);
-    return Py_None;
-
+    Py_RETURN_NONE;
 }
 
 /** \ingroup py_c

@@ -179,8 +179,7 @@ rpmfi_Next(rpmfiObject * s)
     result = rpmfi_iternext(s);
 
     if (result == NULL) {
-	Py_INCREF(Py_None);
-	return Py_None;
+	Py_RETURN_NONE;
     }
 
     return result;

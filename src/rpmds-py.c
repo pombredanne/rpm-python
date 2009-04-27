@@ -214,8 +214,7 @@ rpmds_Next(rpmdsObject * s)
     result = rpmds_iternext(s);
 
     if (result == NULL) {
-	Py_INCREF(Py_None);
-        return Py_None;
+	Py_RETURN_NONE;
     }
     return result;
 }
@@ -245,8 +244,7 @@ rpmds_Notify(rpmdsObject * s, PyObject * args, PyObject * kwds)
 	return NULL;
 
     rpmdsNotify(s->ds, where, rc);
-    Py_INCREF(Py_None);
-    return Py_None;
+    Py_RETURN_NONE;
 }
 
 static PyObject *

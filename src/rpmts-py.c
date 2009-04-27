@@ -190,8 +190,7 @@ rpmts_AddInstall(rpmtsObject * s, PyObject * args, PyObject * kwds)
     if (key)
 	PyList_Append(s->keyList, key);
 
-    Py_INCREF(Py_None);
-    return Py_None;
+    Py_RETURN_NONE;
 }
 
 /** \ingroup py_c
@@ -249,8 +248,7 @@ rpmts_AddErase(rpmtsObject * s, PyObject * args, PyObject * kwds)
 	mi = rpmdbFreeIterator(mi);
     }
 
-    Py_INCREF(Py_None);
-    return Py_None;
+    Py_RETURN_NONE;
 }
 
 /** \ingroup py_c
@@ -383,8 +381,7 @@ rpmts_Check(rpmtsObject * s, PyObject * args, PyObject * kwds)
 	return list;
     }
 
-    Py_INCREF(Py_None);
-    return Py_None;
+    Py_RETURN_NONE;
 }
 
 /** \ingroup py_c
@@ -412,8 +409,7 @@ rpmts_Clean(rpmtsObject * s)
 
     rpmtsClean(s->ts);
 
-    Py_INCREF(Py_None);
-    return Py_None;
+    Py_RETURN_NONE;
 }
 
 /** \ingroup py_c
@@ -560,8 +556,7 @@ rpmts_HdrCheck(rpmtsObject * s, PyObject * args, PyObject * kwds)
     	return NULL;
 
     if (blob == Py_None) {
-	Py_INCREF(Py_None);
-	return Py_None;
+	Py_RETURN_NONE;
     }
     if (!PyString_Check(blob)) {
 	PyErr_SetString(pyrpmError, "hdrCheck takes a string of octets");
@@ -660,8 +655,7 @@ rpmts_PgpPrtPkts(rpmtsObject * s, PyObject * args, PyObject * kwds)
     	return NULL;
 
     if (blob == Py_None) {
-	Py_INCREF(Py_None);
-	return Py_None;
+	Py_RETURN_NONE;
     }
     if (!PyString_Check(blob)) {
 	PyErr_SetString(pyrpmError, "pgpPrtPkts takes a string of octets");
@@ -693,8 +687,7 @@ rpmts_PgpImportPubkey(rpmtsObject * s, PyObject * args, PyObject * kwds)
 	return NULL;
 
     if (blob == Py_None) {
-	Py_INCREF(Py_None);
-	return Py_None;
+	Py_RETURN_NONE;
     }
     if (!PyString_Check(blob)) {
 	PyErr_SetString(pyrpmError, "PgpImportPubkey takes a string of octets");
@@ -723,8 +716,7 @@ rpmts_GetKeys(rpmtsObject * s)
     if (data == NULL || num <= 0) {
 	free(data);
 	data = NULL;
-	Py_INCREF(Py_None);
-	return Py_None;
+	Py_RETURN_NONE;
     }
 
     tuple = PyTuple_New(num);
@@ -914,8 +906,7 @@ rpmts_Run(rpmtsObject * s, PyObject * args, PyObject * kwds)
 	list = PyList_New(0);
 	return list;
     } else if (!rc) {
-	Py_INCREF(Py_None);
-	return Py_None;
+	Py_RETURN_NONE;
     }
 
     list = PyList_New(0);
@@ -990,8 +981,7 @@ rpmts_Next(rpmtsObject * s)
     result = rpmts_iternext(s);
 
     if (result == NULL) {
-	Py_INCREF(Py_None);
-	return Py_None;
+	Py_RETURN_NONE;
     }
 
     return result;

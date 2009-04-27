@@ -198,8 +198,7 @@ rpmte_DS(rpmteObject * s, PyObject * args, PyObject * kwds)
 
     ds = rpmteDS(s->te, tag);
     if (ds == NULL) {
-	Py_INCREF(Py_None);
-	return Py_None;
+	Py_RETURN_NONE;
     }
     return (PyObject *) rpmds_Wrap(rpmdsLink(ds, "rpmte_DS"));
 }
@@ -223,8 +222,7 @@ rpmte_FI(rpmteObject * s, PyObject * args, PyObject * kwds)
 
     fi = rpmteFI(s->te);
     if (fi == NULL) {
-	Py_INCREF(Py_None);
-	return Py_None;
+	Py_RETURN_NONE;
     }
     return (PyObject *) rpmfi_Wrap(rpmfiLink(fi, "rpmte_FI"));
 }

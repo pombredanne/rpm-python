@@ -24,8 +24,7 @@ rpmmacro_AddMacro(PyObject * self, PyObject * args, PyObject * kwds)
 
     addMacro(NULL, name, NULL, val, -1);
 
-    Py_INCREF(Py_None);
-    return Py_None;
+    Py_RETURN_NONE;
 }
 
 /**
@@ -41,8 +40,7 @@ rpmmacro_DelMacro(PyObject * self, PyObject * args, PyObject * kwds)
 
     delMacro(NULL, name);
 
-    Py_INCREF(Py_None);
-    return Py_None;
+    Py_RETURN_NONE;
 }
 
 /**

@@ -21,9 +21,7 @@ static PyObject * rpmlog_Log(PyObject * self, PyObject * args, PyObject * kwds)
     /* XXX TODO check for arg sanity */
 
     rpmlog(level, "%s", msg);
-    Py_INCREF(Py_None);
-    return Py_None;
-    
+    Py_RETURN_NONE;
 }
 
 /**
