@@ -191,8 +191,7 @@ rpmte_DS(rpmteObject * s, PyObject * args, PyObject * kwds)
 	return NULL;
 
     tag = tagNumFromPyObject(TagN);
-    if (tag == -1) {
-	PyErr_SetString(PyExc_TypeError, "unknown tag type");
+    if (tag == RPMTAG_NOT_FOUND) {
 	return NULL;
     }
 
@@ -215,8 +214,7 @@ rpmte_FI(rpmteObject * s, PyObject * args, PyObject * kwds)
 	return NULL;
 
     tag = tagNumFromPyObject(TagN);
-    if (tag == -1) {
-	PyErr_SetString(PyExc_TypeError, "unknown tag type");
+    if (tag == RPMTAG_NOT_FOUND) {
 	return NULL;
     }
 

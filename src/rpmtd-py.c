@@ -121,7 +121,6 @@ static PyObject *rpmtd_setTag(rpmtdObject *self, PyObject *args, PyObject *kwds)
 
     tag = tagNumFromPyObject(pytag);
     if (tag == RPMTAG_NOT_FOUND) {
-	PyErr_SetString(PyExc_KeyError, "unknown header tag");
 	return NULL;
     }
     
@@ -173,8 +172,6 @@ static PyObject *rpmtd_new(PyTypeObject *subtype,
 
     tag = tagNumFromPyObject(pytag);
     if (tag == RPMTAG_NOT_FOUND) {
-	PyErr_SetString(PyExc_TypeError, 
-			"can't create container for unknown tag");
 	return NULL;
     }
 

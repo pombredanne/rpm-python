@@ -177,7 +177,6 @@ static PyObject * hdrHasKey(hdrObject *self, PyObject *pytag)
 {
     rpmTag tag = tagNumFromPyObject(pytag);
     if (tag == RPMTAG_NOT_FOUND) {
-	PyErr_SetString(PyExc_KeyError, "unknown header tag");
 	return NULL;
     }
 
@@ -261,7 +260,6 @@ PyObject * hdrGet(hdrObject *self, PyObject *args, PyObject *kwds)
 
     tag = tagNumFromPyObject(pytag);
     if (tag == RPMTAG_NOT_FOUND) {
-	PyErr_SetString(PyExc_KeyError, "unknown header tag");
 	return NULL;
     }
 
@@ -361,15 +359,19 @@ static void hdr_dealloc(hdrObject * s)
  */
 rpmTag tagNumFromPyObject (PyObject *item)
 {
-    char * str;
+    rpmTag tag = RPMTAG_NOT_FOUND;
 
     if (PyInt_Check(item)) {
-	return PyInt_AsLong(item);
+	/* XXX we should probably validate tag numbers too */
+	tag = PyInt_AsLong(item);
     } else if (PyString_Check(item)) {
-	str = PyString_AsString(item);
-	return rpmTagGetValue(str);
+	tag = rpmTagGetValue(PyString_AsString(item));
     }
-    return RPMTAG_NOT_FOUND;
+    if (tag == RPMTAG_NOT_FOUND) {
+	PyErr_SetString(PyExc_ValueError, "unknown header tag");
+    }
+	
+    return tag;
 }
 
 
@@ -380,7 +382,6 @@ static PyObject * hdr_subscript(hdrObject *self, PyObject *item)
     rpmTag tag = tagNumFromPyObject(item);
 
     if (tag == RPMTAG_NOT_FOUND) {
-	PyErr_SetString(PyExc_KeyError, "unknown header tag");
 	return NULL;
     }
 
@@ -441,7 +442,6 @@ static int hdr_ass_subscript(hdrObject *self, PyObject *key, PyObject *value)
 {
     rpmTag tag = tagNumFromPyObject(key);
     if (tag == RPMTAG_NOT_FOUND) {
-	PyErr_SetString(PyExc_KeyError, "unknown header tag");
 	return -1;
     }
 
