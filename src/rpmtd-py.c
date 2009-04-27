@@ -54,28 +54,20 @@ PyObject * rpmtd_ItemAsPyobj(rpmtd td)
     PyObject *res = NULL;
     char *str = NULL;
 
-    switch (rpmtdType(td)) {
-    case RPM_STRING_TYPE:
-    case RPM_I18NSTRING_TYPE:
-    case RPM_STRING_ARRAY_TYPE:
+    switch (rpmtdClass(td)) {
+    case RPM_STRING_CLASS:
 	res = PyString_FromString(rpmtdGetString(td));
 	break;
-    case RPM_INT64_TYPE:
-	res = PyLong_FromLongLong(*rpmtdGetUint64(td));
+    case RPM_NUMERIC_CLASS:
+	res = PyLong_FromLongLong(rpmtdGetNumber(td));
 	break;
-    case RPM_INT32_TYPE:
-	res = PyInt_FromLong(*rpmtdGetUint32(td));
-	break;
-    case RPM_INT16_TYPE:
-	res = PyInt_FromLong(*rpmtdGetUint16(td));
-	break;
-    case RPM_BIN_TYPE:
+    case RPM_BINARY_CLASS:
 	str = rpmtdFormat(td, RPMTD_FORMAT_STRING, NULL);
 	res = PyString_FromString(str);
 	free(str);
 	break;
     default:
-	PyErr_SetString(PyExc_KeyError, "unhandled data type");
+	PyErr_SetString(PyExc_KeyError, "unknown data type");
 	break;
     }
     return res;
