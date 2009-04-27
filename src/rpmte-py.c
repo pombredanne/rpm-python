@@ -287,8 +287,8 @@ static struct PyMethodDef rpmte_methods[] = {
 - Return the TagN dependency set (or None). TagN is one of\n\
 	'Providename', 'Requirename', 'Obsoletename', 'Conflictname'\n" },
     {"FI",	(PyCFunction)rpmte_FI,		METH_VARARGS|METH_KEYWORDS,
-"te.FI(TagN) -> FI\n\
-- Return the TagN dependency set (or None). TagN must be 'Basenames'.\n" },
+"te.FI -> FI\n\
+- Return element file info set'.\n" },
     {NULL,		NULL}		/* sentinel */
 };
 
