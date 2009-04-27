@@ -403,12 +403,12 @@ static int hdrAppend(Header h, rpmTag tag, PyObject *value)
     switch (type) {
     case RPM_STRING_TYPE:
     case RPM_I18NSTRING_TYPE:
-    case RPM_STRING_ARRAY_TYPE: {
-	char *str;
-	if ((str = PyString_AsString(value)))
+    case RPM_STRING_ARRAY_TYPE:
+	if (PyString_Check(value)) {
+	    char *str = PyString_AsString(value);
 	    rc = headerPutString(h, tag, str);
-	break;
 	}
+	break;
     case RPM_INT64_TYPE: 
 	if (PyLong_Check(value)) {
 	    uint64_t num = PyLong_AsUnsignedLongLong(value);
@@ -427,10 +427,19 @@ static int hdrAppend(Header h, rpmTag tag, PyObject *value)
 	    rc = headerPutUint16(h, tag, &num, 1);
 	}
 	break;
-    /* XXX TODO: handle these too.. */
-    case RPM_BIN_TYPE: 
     case RPM_INT8_TYPE: 
     case RPM_CHAR_TYPE: 
+	if (PyInt_Check(value)) {
+	    uint8_t num = PyInt_AsLong(value);
+	    rc = headerPutUint8(h, tag, &num, 1);
+	}
+	break;
+    case RPM_BIN_TYPE:
+	if (PyString_Check(value)) {
+	    uint8_t *blob = (uint8_t*)PyString_AsString(value);
+	    rc = headerPutBin(h, tag, blob, PyString_Size(value));
+	}
+	break;
     default:
 	PyErr_SetString(PyExc_KeyError, "unhandled data type");
 	break;
