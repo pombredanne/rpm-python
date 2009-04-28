@@ -250,16 +250,14 @@ rpmds_Notify(rpmdsObject * s, PyObject * args, PyObject * kwds)
 static PyObject *
 rpmds_Find(rpmdsObject * s, PyObject * args, PyObject * kwds)
 {
-    PyObject * to = NULL;
-    rpmdsObject * o;
+    rpmdsObject *o = NULL;
     int rc;
     char * kwlist[] = {"element", NULL};
 
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O:Find", kwlist, &to))
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O!:Find", kwlist, 
+				     &rpmds_Type, &o)) {
 	return NULL;
-
-    /* XXX ds type check needed. */
-    o = (rpmdsObject *)to;
+    }
 
     /* XXX make sure ods index is valid, real fix in lib/rpmds.c. */
     if (rpmdsIx(o->ds) == -1)	rpmdsSetIx(o->ds, 0);
@@ -271,29 +269,27 @@ rpmds_Find(rpmdsObject * s, PyObject * args, PyObject * kwds)
 static PyObject *
 rpmds_Merge(rpmdsObject * s, PyObject * args, PyObject * kwds)
 {
-    PyObject * to = NULL;
-    rpmdsObject * o;
+    rpmdsObject *o = NULL;
     char * kwlist[] = {"element", NULL};
 
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O:Merge", kwlist, &to))
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O!:Merge", kwlist,
+				     &rpmds_Type, &o)) {
 	return NULL;
+    }
 
-    /* XXX ds type check needed. */
-    o = (rpmdsObject *)to;
     return Py_BuildValue("i", rpmdsMerge(&s->ds, o->ds));
 }
 static PyObject *
 rpmds_Search(rpmdsObject * s, PyObject * args, PyObject * kwds)
 {
-    PyObject * to = NULL;
-    rpmdsObject * o;
+    rpmdsObject *o = NULL;
     char * kwlist[] = {"element", NULL};
 
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O:Merge", kwlist, &to))
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O!:Search", kwlist, 
+				     &rpmds_Type, &o)) {
         return NULL;
+    }
 
-    /* XXX ds type check needed. */
-    o = (rpmdsObject *)to;
     return Py_BuildValue("i", rpmdsSearch(s->ds, o->ds));
 }
 
