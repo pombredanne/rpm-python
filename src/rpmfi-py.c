@@ -140,6 +140,14 @@ rpmfiFile_FClass(rpmfiFileObject * s)
     return PyString_FromString(FClass);
 }
 
+static rpmfiFileObject *
+rpmfiFile_Wrap(rpmfi fi)
+{
+    rpmfiFileObject *fo = PyObject_New(rpmfiFileObject, &rpmfiFile_Type);
+    fo->fi = fi;
+    return fo;
+}
+
 static PyObject *
 rpmfi_iter(rpmfiObject * s)
 {
@@ -161,9 +169,8 @@ rpmfi_iternext(rpmfiObject * s)
 
     /* If more to do, return a new rpmfiFile object. */
     if (rpmfiNext(s->fi) >= 0) {
-	s->cur = PyObject_New(rpmfiFileObject, &rpmfiFile_Type);
-	s->cur->fi = s->fi;
-	result = (PyObject *) s->cur;
+	result = rpmfiFile_Wrap(s->fi);
+	s->cur = result;
     } else {
 	s->cur = NULL;
     }
