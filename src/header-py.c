@@ -219,7 +219,7 @@ static PyObject * hdrUnload(hdrObject * s, PyObject * args, PyObject *keywords)
 
 /** \ingroup py_c
  */
-static PyObject * hdrSprintf(hdrObject * s, PyObject * args, PyObject * kwds)
+static PyObject * hdrFormat(hdrObject * s, PyObject * args, PyObject * kwds)
 {
     char * fmt;
     char * r;
@@ -346,7 +346,7 @@ static struct PyMethodDef hdr_methods[] = {
 	NULL },
     {"unload",		(PyCFunction) hdrUnload,	METH_VARARGS|METH_KEYWORDS,
 	NULL },
-    {"sprintf",		(PyCFunction) hdrSprintf,	METH_VARARGS|METH_KEYWORDS,
+    {"format",		(PyCFunction) hdrFormat,	METH_VARARGS|METH_KEYWORDS,
 	NULL },
     {"convert",		(PyCFunction) hdrConvert,	METH_VARARGS|METH_KEYWORDS,
 	NULL },
