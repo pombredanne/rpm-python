@@ -298,6 +298,29 @@ PyObject *hdrConvert(hdrObject *self, PyObject *args, PyObject *kwds)
     return PyBool_FromLong(headerConvert(self->h, op));
 }
 
+static PyObject *
+hdr_fiFromHeader(PyObject * s, PyObject * args, PyObject * kwds)
+{
+    return PyObject_Call((PyObject *) &rpmfi_Type,
+			 Py_BuildValue("(O)", s), kwds);
+}
+
+static PyObject *
+hdr_dsFromHeader(PyObject * s, PyObject * args, PyObject * kwds)
+{
+    return PyObject_Call((PyObject *) &rpmds_Type,
+			 Py_BuildValue("(O)", s), kwds);
+}
+
+static PyObject *
+hdr_dsOfHeader(PyObject * s)
+{
+    hdrObject * ho = (hdrObject *)s;
+    rpmTag tagN = RPMTAG_PROVIDENAME;
+    rpmsenseFlags Flags = RPMSENSE_EQUAL;
+
+    return rpmds_Wrap( rpmdsThis(hdrGetHeader(ho), tagN, Flags) );
+}
 /**
  */
 static int hdr_compare(hdrObject * a, hdrObject * b)

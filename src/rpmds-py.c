@@ -601,19 +601,3 @@ rpmds_Single(PyObject * s, PyObject * args, PyObject * kwds)
     return rpmds_Wrap( rpmdsSingle(tagN, N, EVR, Flags) );
 }
 
-PyObject *
-hdr_dsFromHeader(PyObject * s, PyObject * args, PyObject * kwds)
-{
-    return PyObject_Call((PyObject *) &rpmds_Type,
-			 Py_BuildValue("(O)", s), kwds);
-}
-
-PyObject *
-hdr_dsOfHeader(PyObject * s)
-{
-    hdrObject * ho = (hdrObject *)s;
-    rpmTag tagN = RPMTAG_PROVIDENAME;
-    rpmsenseFlags Flags = RPMSENSE_EQUAL;
-
-    return rpmds_Wrap( rpmdsThis(hdrGetHeader(ho), tagN, Flags) );
-}

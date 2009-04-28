@@ -39,12 +39,4 @@ PyObject * rpmds_Wrap(rpmds ds);
  */
 PyObject * rpmds_Single(PyObject * s, PyObject * args, PyObject * kwds);
 
-/**
- */
-PyObject * hdr_dsFromHeader(PyObject * s, PyObject * args, PyObject * kwds);
-
-/**
- */
-PyObject * hdr_dsOfHeader(PyObject * s);
-
 #endif
