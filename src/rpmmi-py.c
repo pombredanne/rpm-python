@@ -232,8 +232,7 @@ rpmmiObject * rpmmi_Wrap(rpmdbMatchIterator mi, PyObject *s)
     rpmmiObject * mio = (rpmmiObject *) PyObject_New(rpmmiObject, &rpmmi_Type);
 
     if (mio == NULL) {
-        PyErr_SetString(PyExc_MemoryError, "out of memory creating rpmmiObject");
-        return NULL;
+	return PyErr_NoMemory();
     }
     mio->mi = mi;
     mio->ref = s;

@@ -204,11 +204,10 @@ rpmKeyringObject * rpmKeyring_Wrap(rpmKeyring keyring)
 {
     rpmKeyringObject *ko = (rpmKeyringObject *) PyObject_New(rpmKeyringObject, &rpmKeyring_Type);
 
-    if (ko) {
-    	ko->keyring = keyring;
-    } else {
-        PyErr_SetString(PyExc_MemoryError, "out of memory creating keyring");
+    if (ko == NULL) {
+	return PyErr_NoMemory();
     }
+    ko->keyring = keyring;
     return ko;
 }
 

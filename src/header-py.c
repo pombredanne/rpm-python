@@ -558,6 +558,9 @@ PyTypeObject hdr_Type = {
 hdrObject * hdr_Wrap(Header h)
 {
     hdrObject * hdr = PyObject_New(hdrObject, &hdr_Type);
+    if (hdr == NULL) {
+	return PyErr_NoMemory();
+    }
     hdr->h = headerLink(h);
     return hdr;
 }

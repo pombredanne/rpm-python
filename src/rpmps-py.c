@@ -227,8 +227,9 @@ rpmps_Wrap(rpmps ps)
 {
     rpmpsObject * s = PyObject_New(rpmpsObject, &rpmps_Type);
 
-    if (s == NULL)
-	return NULL;
+    if (s == NULL) {
+	return PyErr_NoMemory();
+    }
     s->ps = ps;
     s->psi = NULL;
     return s;

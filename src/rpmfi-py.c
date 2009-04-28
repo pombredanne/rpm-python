@@ -446,8 +446,9 @@ rpmfi_Wrap(rpmfi fi)
 {
     rpmfiObject *s = PyObject_New(rpmfiObject, &rpmfi_Type);
 
-    if (s == NULL)
-	return NULL;
+    if (s == NULL) {
+	return PyErr_NoMemory();
+    }
     s->fi = fi;
     s->cur = NULL;
     return s;

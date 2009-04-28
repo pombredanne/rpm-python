@@ -570,8 +570,9 @@ rpmds_Wrap(rpmds ds)
 {
     rpmdsObject * s = PyObject_New(rpmdsObject, &rpmds_Type);
 
-    if (s == NULL)
-	return NULL;
+    if (s == NULL) {
+	return PyErr_NoMemory();
+    }
     s->ds = ds;
     s->cur = NULL;
     return s;

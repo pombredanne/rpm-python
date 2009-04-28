@@ -243,11 +243,10 @@ rpmtdObject * rpmtd_Wrap(rpmtd td)
 {
     rpmtdObject * tdo = (rpmtdObject *) PyObject_New(rpmtdObject, &rpmtd_Type);
 
-    if (tdo) {
-    	tdo->td = td;
-    } else {
-        PyErr_SetString(PyExc_MemoryError, "out of memory creating rpmtd");
+    if (tdo == NULL) {
+	return PyErr_NoMemory();
     }
+    tdo->td = td;
     return tdo;
 }
 
