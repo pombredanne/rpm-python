@@ -850,7 +850,7 @@ rpmts_SetProbFilter(rpmtsObject * s, PyObject * args, PyObject * kwds)
 
 /** \ingroup py_c
  */
-static rpmpsObject *
+static PyObject *
 rpmts_Problems(rpmtsObject * s)
 {
 
