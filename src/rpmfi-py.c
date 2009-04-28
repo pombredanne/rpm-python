@@ -97,7 +97,7 @@ rpmfiFile_FLink(rpmfiFileObject * s)
 static PyObject *
 rpmfiFile_FSize(rpmfiFileObject * s)
 {
-    return Py_BuildValue("i", rpmfiFSize(s->fi));
+    return Py_BuildValue("K", rpmfiFSize(s->fi));
 }
 
 static PyObject *

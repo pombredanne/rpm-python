@@ -115,7 +115,7 @@ rpmte_Color(rpmteObject * s)
 static PyObject *
 rpmte_PkgFileSize(rpmteObject * s)
 {
-    return Py_BuildValue("i", rpmtePkgFileSize(s->te));
+    return Py_BuildValue("K", rpmtePkgFileSize(s->te));
 }
 
 static PyObject *
