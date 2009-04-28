@@ -133,16 +133,6 @@ static PyMappingMethods rpmps_as_mapping = {
  */
 static int rpmps_init(rpmpsObject * s, PyObject *args, PyObject *kwds)
 {
-    char * kwlist[] = {NULL};
-
-    debug("(%p,%p,%p)\n", s, args, kwds);
-
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, ":rpmps_init", kwlist))
-	return -1;
-
-    s->ps = rpmpsCreate();
-    s->psi = NULL;
-
     return 0;
 }
 
@@ -160,13 +150,15 @@ static void rpmps_free(rpmpsObject * s)
  */
 static PyObject * rpmps_new(PyTypeObject * subtype, PyObject *args, PyObject *kwds)
 {
-    rpmpsObject * s = (void *) PyObject_New(rpmpsObject, subtype);
+    rpmpsObject * s = NULL;
+    char * kwlist[] = {NULL};
 
-    /* Perform additional initialization. */
-    if (rpmps_init(s, args, kwds) < 0) {
-	rpmps_free(s);
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, ":rpmps_init", kwlist))
 	return NULL;
-    }
+
+    s = PyObject_New(rpmpsObject, subtype);
+    s->ps = rpmpsCreate();
+    s->psi = NULL;
 
     debug("%p ++ ps %p\n", s, s->ps);
 
