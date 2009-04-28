@@ -292,20 +292,6 @@ static PyMappingMethods rpmfi_as_mapping = {
  */
 static int rpmfi_init(rpmfiObject * s, PyObject *args, PyObject *kwds)
 {
-    hdrObject * ho = NULL;
-    rpmts ts = NULL;	/* XXX FIXME: fiFromHeader should be a ts method. */
-    int flags = 0;
-    char * kwlist[] = {"header", "flags", NULL};
-
-    debug("(%p,%p,%p)\n", s, args, kwds);
-
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O!|i:rpmfi_init", kwlist,
-	    &hdr_Type, &ho, &flags))
-	return -1;
-
-    s->fi = rpmfiNew(ts, hdrGetHeader(ho), RPMTAG_BASENAMES, flags);
-    s->cur = NULL;
-
     return 0;
 }
 
@@ -323,13 +309,18 @@ static void rpmfi_free(rpmfiObject * s)
  */
 static PyObject * rpmfi_new(PyTypeObject * subtype, PyObject *args, PyObject *kwds)
 {
-    rpmfiObject * s = (void *) PyObject_New(rpmfiObject, subtype);
+    hdrObject * ho = NULL;
+    rpmfiObject *s = NULL;
+    char * kwlist[] = {"header", "flags", NULL};
+    rpmfiFlags flags = 0;
 
-    /* Perform additional initialization. */
-    if (rpmfi_init(s, args, kwds) < 0) {
-	rpmfi_free(s);
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O!|i:rpmfi_init", kwlist,
+	    &hdr_Type, &ho, &flags))
 	return NULL;
-    }
+
+    s = PyObject_New(rpmfiObject, subtype);
+    s->fi = rpmfiNew(NULL, hdrGetHeader(ho), RPMTAG_BASENAMES, flags);
+    s->cur = NULL;
 
     debug("%p ++ fi %p\n", s, s->fi);
 
@@ -461,5 +452,5 @@ hdr_fiFromHeader(PyObject * s, PyObject * args, PyObject * kwds)
 	    &flags))
 	return NULL;
 
-    return rpmfi_Wrap( rpmfiNew(ts, hdrGetHeader(ho), RPMTAG_BASENAMES, flags) );
+    return rpmfi_Wrap(rpmfiNew(ts, hdrGetHeader(ho), RPMTAG_BASENAMES, flags));
 }
