@@ -565,7 +565,7 @@ rpmds dsFromDs(rpmdsObject * s)
     return s->ds;
 }
 
-rpmdsObject *
+PyObject *
 rpmds_Wrap(rpmds ds)
 {
     rpmdsObject * s = PyObject_New(rpmdsObject, &rpmds_Type);
@@ -575,10 +575,10 @@ rpmds_Wrap(rpmds ds)
     }
     s->ds = ds;
     s->cur = NULL;
-    return s;
+    return (PyObject*) s;
 }
 
-rpmdsObject *
+PyObject *
 rpmds_Single(PyObject * s, PyObject * args, PyObject * kwds)
 {
     PyObject * to = NULL;
@@ -601,14 +601,14 @@ rpmds_Single(PyObject * s, PyObject * args, PyObject * kwds)
     return rpmds_Wrap( rpmdsSingle(tagN, N, EVR, Flags) );
 }
 
-rpmdsObject *
+PyObject *
 hdr_dsFromHeader(PyObject * s, PyObject * args, PyObject * kwds)
 {
     return PyObject_Call((PyObject *) &rpmds_Type,
 			 Py_BuildValue("(O)", s), kwds);
 }
 
-rpmdsObject *
+PyObject *
 hdr_dsOfHeader(PyObject * s)
 {
     hdrObject * ho = (hdrObject *)s;
