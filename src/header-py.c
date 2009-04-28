@@ -5,7 +5,6 @@
 #include <rpm/rpmlib.h>		/* rpmvercmp */
 #include <rpm/rpmtag.h>
 #include <rpm/rpmstring.h>
-#include <rpm/rpmts.h>	/* XXX rpmtsCreate/rpmtsFree */
 
 #include "header-py.h"
 #include "rpmds-py.h"
