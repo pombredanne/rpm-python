@@ -1016,7 +1016,7 @@ static PyObject *rpmts_getKeyring(rpmtsObject *self,
     if (!PyArg_ParseTupleAndKeywords(args, kwds, "i", kwlist, &autoload))
 	return NULL;
 
-    return (PyObject *) rpmKeyring_Wrap(rpmtsGetKeyring(self->ts, autoload));
+    return rpmKeyring_Wrap(rpmtsGetKeyring(self->ts, autoload));
 }
 
 /**

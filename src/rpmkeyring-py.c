@@ -200,7 +200,7 @@ PyTypeObject rpmKeyring_Type = {
 	0,				/* tp_is_gc */
 };
 
-rpmKeyringObject * rpmKeyring_Wrap(rpmKeyring keyring)
+PyObject * rpmKeyring_Wrap(rpmKeyring keyring)
 {
     rpmKeyringObject *ko = (rpmKeyringObject *) PyObject_New(rpmKeyringObject, &rpmKeyring_Type);
 
@@ -208,6 +208,6 @@ rpmKeyringObject * rpmKeyring_Wrap(rpmKeyring keyring)
 	return PyErr_NoMemory();
     }
     ko->keyring = keyring;
-    return ko;
+    return (PyObject*) ko;
 }
 
