@@ -176,10 +176,10 @@ rpmds_richcompare(rpmdsObject * a, rpmdsObject * b, int op)
 }
 
 static PyObject *
-rpmds_iter(rpmdsObject * s)
+rpmds_iter(PyObject * s)
 {
     Py_INCREF(s);
-    return (PyObject *)s;
+    return s;
 }
 
 static PyObject *
@@ -306,7 +306,7 @@ rpmds_Rpmlib(rpmdsObject * s)
     /* XXX check return code, permit arg (NULL uses system default). */
     xx = rpmdsRpmlib(&ds, NULL);
 
-    return (PyObject *) rpmds_Wrap( ds );
+    return rpmds_Wrap(ds);
 }
 
 static struct PyMethodDef rpmdsDep_methods[] = {
@@ -497,7 +497,7 @@ PyTypeObject rpmds_Type = {
 	0,				/* tp_clear */
 	(richcmpfunc) rpmds_richcompare,/* tp_richcompare */
 	0,				/* tp_weaklistoffset */
-	(getiterfunc) rpmds_iter,	/* tp_iter */
+	rpmds_iter,			/* tp_iter */
 	(iternextfunc) rpmds_iternext,	/* tp_iternext */
 	rpmds_methods,			/* tp_methods */
 	0,				/* tp_members */

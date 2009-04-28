@@ -19,10 +19,10 @@
  * \name Class: Rpmtd
  */
 
-static PyObject *rpmtd_iter(rpmtdObject *self)
+static PyObject *rpmtd_iter(PyObject *self)
 {
     Py_INCREF(self);
-    return (PyObject *)self;
+    return self;
 }
 
 static PyObject *rpmtd_iternext(rpmtdObject *self)
@@ -241,7 +241,7 @@ PyTypeObject rpmtd_Type = {
 
 PyObject * rpmtd_Wrap(rpmtd td)
 {
-    rpmtdObject * tdo = (rpmtdObject *) PyObject_New(rpmtdObject, &rpmtd_Type);
+    rpmtdObject * tdo = PyObject_New(rpmtdObject, &rpmtd_Type);
 
     if (tdo == NULL) {
 	return PyErr_NoMemory();

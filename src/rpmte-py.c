@@ -169,7 +169,7 @@ rpmte_DS(rpmteObject * s, PyObject * args, PyObject * kwds)
     if (ds == NULL) {
 	Py_RETURN_NONE;
     }
-    return (PyObject *) rpmds_Wrap(rpmdsLink(ds, "rpmte_DS"));
+    return rpmds_Wrap(rpmdsLink(ds, "rpmte_DS"));
 }
 
 static PyObject *
