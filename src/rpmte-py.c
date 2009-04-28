@@ -179,7 +179,7 @@ rpmte_FI(rpmteObject * s, PyObject * args, PyObject * kwds)
     if (fi == NULL) {
 	Py_RETURN_NONE;
     }
-    return (PyObject *) rpmfi_Wrap(rpmfiLink(fi, "rpmte_FI"));
+    return rpmfi_Wrap(rpmfiLink(fi, "rpmte_FI"));
 }
 
 /** \ingroup py_c
