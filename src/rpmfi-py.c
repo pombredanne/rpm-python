@@ -443,14 +443,6 @@ rpmfi_Wrap(rpmfi fi)
 rpmfiObject *
 hdr_fiFromHeader(PyObject * s, PyObject * args, PyObject * kwds)
 {
-    hdrObject * ho = (hdrObject *)s;
-    rpmts ts = NULL;	/* XXX FIXME: fiFromHeader should be a ts method. */
-    int flags = 0;
-    char * kwlist[] = {"flags", NULL};
-
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "|i:fiFromHeader", kwlist,
-	    &flags))
-	return NULL;
-
-    return rpmfi_Wrap(rpmfiNew(ts, hdrGetHeader(ho), RPMTAG_BASENAMES, flags));
+    return PyObject_Call((PyObject *) &rpmfi_Type,
+			 Py_BuildValue("(O)", s), kwds);
 }
