@@ -81,7 +81,7 @@ rpmmi_iternext(rpmmiObject * s)
 	s->mi = rpmdbFreeIterator(s->mi);
 	return NULL;
     }
-    return (PyObject *) hdr_Wrap(h);
+    return hdr_Wrap(h);
 }
 
 /**
