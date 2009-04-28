@@ -303,7 +303,7 @@ static int rpmfi_init(rpmfiObject * s, PyObject *args, PyObject *kwds)
 	    &hdr_Type, &ho, &flags))
 	return -1;
 
-    s->fi = rpmfiNew(ts, hdrGetHeader(ho), -1, flags);
+    s->fi = rpmfiNew(ts, hdrGetHeader(ho), RPMTAG_BASENAMES, flags);
     s->cur = NULL;
 
     return 0;
@@ -461,5 +461,5 @@ hdr_fiFromHeader(PyObject * s, PyObject * args, PyObject * kwds)
 	    &flags))
 	return NULL;
 
-    return rpmfi_Wrap( rpmfiNew(ts, hdrGetHeader(ho), -1, flags) );
+    return rpmfi_Wrap( rpmfiNew(ts, hdrGetHeader(ho), RPMTAG_BASENAMES, flags) );
 }
