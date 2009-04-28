@@ -227,7 +227,7 @@ PyTypeObject rpmmi_Type = {
 	0,				/* tp_is_gc */
 };
 
-rpmmiObject * rpmmi_Wrap(rpmdbMatchIterator mi, PyObject *s)
+PyObject * rpmmi_Wrap(rpmdbMatchIterator mi, PyObject *s)
 {
     rpmmiObject * mio = (rpmmiObject *) PyObject_New(rpmmiObject, &rpmmi_Type);
 
@@ -237,6 +237,6 @@ rpmmiObject * rpmmi_Wrap(rpmdbMatchIterator mi, PyObject *s)
     mio->mi = mi;
     mio->ref = s;
     Py_INCREF(mio->ref);
-    return mio;
+    return (PyObject*) mio;
 }
 

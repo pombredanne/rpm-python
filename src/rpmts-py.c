@@ -1021,7 +1021,7 @@ static PyObject *rpmts_getKeyring(rpmtsObject *self,
 
 /**
  */
-static rpmmiObject *
+static PyObject *
 rpmts_Match(rpmtsObject * s, PyObject * args, PyObject * kwds)
 {
     PyObject *TagN = NULL;
