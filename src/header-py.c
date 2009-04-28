@@ -365,6 +365,9 @@ static PyObject *hdr_new(PyTypeObject *subtype,
 			 PyObject *args, PyObject *kwds)
 {
     hdrObject *self = PyObject_New(hdrObject, &hdr_Type);
+    if (self == NULL) {
+	return PyErr_NoMemory();
+    }
     self->h = headerNew();
     
     return (PyObject *)self;

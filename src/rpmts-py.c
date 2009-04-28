@@ -1234,6 +1234,9 @@ static PyObject * rpmts_new(PyTypeObject * subtype, PyObject *args, PyObject *kw
 	return NULL;
 
     s = PyObject_New(rpmtsObject, subtype);
+    if (s == NULL) {
+	return PyErr_NoMemory();
+    }
     s->ts = rpmtsCreate();
     /* XXX: Why is there no rpmts_SetRootDir() ? */
     (void) rpmtsSetRootDir(s->ts, rootDir);

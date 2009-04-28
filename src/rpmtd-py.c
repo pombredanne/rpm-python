@@ -176,6 +176,9 @@ static PyObject *rpmtd_new(PyTypeObject *subtype,
     }
 
     self = PyObject_New(rpmtdObject, subtype);
+    if (self == NULL) {
+	return PyErr_NoMemory();
+    }
     td = rpmtdNew();
     td->tag = tag;
     td->type = rpmTagGetType(tag) & RPM_MASK_TYPE;

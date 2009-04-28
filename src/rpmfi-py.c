@@ -144,6 +144,9 @@ static rpmfiFileObject *
 rpmfiFile_Wrap(rpmfi fi)
 {
     rpmfiFileObject *fo = PyObject_New(rpmfiFileObject, &rpmfiFile_Type);
+    if (fo == NULL) {
+	return PyErr_NoMemory();
+    }
     fo->fi = fi;
     return fo;
 }
@@ -332,6 +335,9 @@ static PyObject * rpmfi_new(PyTypeObject * subtype, PyObject *args, PyObject *kw
 	return NULL;
 
     s = PyObject_New(rpmfiObject, subtype);
+    if (s == NULL) {
+	return PyErr_NoMemory();
+    }
     s->fi = rpmfiNew(NULL, hdrGetHeader(ho), RPMTAG_BASENAMES, flags);
     s->cur = NULL;
 

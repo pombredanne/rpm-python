@@ -44,6 +44,10 @@ static PyObject *rpmPubkey_new(PyTypeObject *subtype,
     }
 
     self = PyObject_New(rpmPubkeyObject, subtype);
+    if (self == NULL) {
+	rpmPubkeyFree(pubkey);
+	return PyErr_NoMemory();
+    }
     self->pubkey = pubkey;
     return (PyObject *)self;
 }
@@ -68,12 +72,14 @@ static void rpmKeyring_dealloc(rpmKeyringObject * self)
 static PyObject *rpmKeyring_new(PyTypeObject *subtype, 
 			   PyObject *args, PyObject *kwds)
 {
-    rpmKeyringObject *self = PyObject_New(rpmKeyringObject, subtype);
-    rpmKeyring keyring;
+    rpmKeyringObject *self;
 
-    keyring = rpmKeyringNew();
+    self = PyObject_New(rpmKeyringObject, subtype);
+    if (self == NULL) {
+	return PyErr_NoMemory();
+    }
 
-    self->keyring = keyring;
+    self->keyring = rpmKeyringNew();
     return (PyObject *)self;
 }
 

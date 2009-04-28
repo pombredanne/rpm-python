@@ -157,6 +157,9 @@ static PyObject * rpmps_new(PyTypeObject * subtype, PyObject *args, PyObject *kw
 	return NULL;
 
     s = PyObject_New(rpmpsObject, subtype);
+    if (s == NULL) {
+	return PyErr_NoMemory();
+    }
     s->ps = rpmpsCreate();
     s->psi = NULL;
 

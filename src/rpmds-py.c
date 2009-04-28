@@ -197,6 +197,9 @@ rpmds_iternext(rpmdsObject * s)
     /* If more to do, return a (N, EVR, Flags) tuple. */
     if (rpmdsNext(s->ds) >= 0) {
 	s->cur = PyObject_New(rpmdsDepObject, &rpmdsDep_Type);
+	if (s->cur == NULL) {
+	    return PyErr_NoMemory();
+	}
 	s->cur->ds = s->ds;
 	result = (PyObject *) s->cur;
     } else {
@@ -441,6 +444,9 @@ static PyObject * rpmds_new(PyTypeObject * subtype, PyObject *args, PyObject *kw
 	}
     }
     s = PyObject_New(rpmdsObject, subtype);
+    if (s == NULL) {
+	return PyErr_NoMemory();
+    }
     s->ds = rpmdsNew(hdrGetHeader(ho), tagN, flags);
     s->cur = NULL;
 
