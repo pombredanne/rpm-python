@@ -305,12 +305,12 @@ PyTypeObject rpmte_Type = {
 	0,				/* tp_is_gc */
 };
 
-rpmteObject * rpmte_Wrap(rpmte te)
+PyObject * rpmte_Wrap(rpmte te)
 {
     rpmteObject *s = PyObject_New(rpmteObject, &rpmte_Type);
     if (s == NULL) {
 	return PyErr_NoMemory();
     }
     s->te = te;
-    return s;
+    return (PyObject *)s;
 }

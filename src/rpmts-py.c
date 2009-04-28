@@ -959,7 +959,7 @@ rpmts_iternext(rpmtsObject * s)
 
     te = rpmtsiNext(s->tsi, s->tsiFilter);
     if (te != NULL) {
-	result = (PyObject *) rpmte_Wrap(te);
+	result = rpmte_Wrap(te);
     } else {
 	s->tsi = rpmtsiFree(s->tsi);
 	s->tsiFilter = 0;
