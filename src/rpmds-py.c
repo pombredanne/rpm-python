@@ -605,8 +605,6 @@ rpmds_Single(PyObject * s, PyObject * args, PyObject * kwds)
 	    return NULL;
 	}
     }
-    if (N != NULL) N = strdup(N);
-    if (EVR != NULL) EVR = strdup(EVR);
     return rpmds_Wrap( rpmdsSingle(tagN, N, EVR, Flags) );
 }
 
