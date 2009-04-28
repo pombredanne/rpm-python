@@ -165,7 +165,7 @@ static PyObject *rpmtd_new(PyTypeObject *subtype,
     PyObject *pytag;
     rpmTag tag;
     rpmtd td;
-    rpmtdObject *self = PyObject_New(rpmtdObject, subtype);
+    rpmtdObject *self;
 
     if (!PyArg_ParseTupleAndKeywords(args, kwds, "O", kwlist, &pytag))
 	return NULL;
@@ -175,6 +175,7 @@ static PyObject *rpmtd_new(PyTypeObject *subtype,
 	return NULL;
     }
 
+    self = PyObject_New(rpmtdObject, subtype);
     td = rpmtdNew();
     td->tag = tag;
     td->type = rpmTagGetType(tag) & RPM_MASK_TYPE;

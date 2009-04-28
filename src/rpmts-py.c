@@ -1228,7 +1228,7 @@ static void rpmts_free(rpmtsObject * s)
  */
 static PyObject * rpmts_new(PyTypeObject * subtype, PyObject *args, PyObject *kwds)
 {
-    rpmtsObject * s = (void *) PyObject_New(rpmtsObject, subtype);
+    rpmtsObject *s;
 
     char * rootDir = "/";
     rpmVSFlags vsflags = rpmExpandNumeric("%{?__vsflags}");
@@ -1240,6 +1240,7 @@ static PyObject * rpmts_new(PyTypeObject * subtype, PyObject *args, PyObject *kw
 	    &rootDir, &vsflags))
 	return NULL;
 
+    s = PyObject_New(rpmtsObject, subtype);
     s->ts = rpmtsCreate();
     /* XXX: Why is there no rpmts_SetRootDir() ? */
     (void) rpmtsSetRootDir(s->ts, rootDir);
