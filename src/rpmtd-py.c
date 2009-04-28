@@ -239,7 +239,7 @@ PyTypeObject rpmtd_Type = {
 	0,				/* tp_is_gc */
 };
 
-rpmtdObject * rpmtd_Wrap(rpmtd td)
+PyObject * rpmtd_Wrap(rpmtd td)
 {
     rpmtdObject * tdo = (rpmtdObject *) PyObject_New(rpmtdObject, &rpmtd_Type);
 
@@ -247,6 +247,6 @@ rpmtdObject * rpmtd_Wrap(rpmtd td)
 	return PyErr_NoMemory();
     }
     tdo->td = td;
-    return tdo;
+    return (PyObject*) tdo;
 }
 

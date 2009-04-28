@@ -24,5 +24,5 @@ extern PyTypeObject rpmtd_Type;
 
 PyObject * rpmtd_ItemAsPyobj(rpmtd td);
 PyObject * rpmtd_AsPyobj(rpmtd td);
-rpmtdObject * rpmtd_Wrap(rpmtd td);
+PyObject * rpmtd_Wrap(rpmtd td);
 #endif

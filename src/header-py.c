@@ -265,7 +265,7 @@ PyObject * hdrGet(hdrObject *self, PyObject *args, PyObject *kwds)
 
     td = rpmtdNew();
     if (headerGet(self->h, tag, td, HEADERGET_EXT)) {
-	return (PyObject*) rpmtd_Wrap(td);
+	return rpmtd_Wrap(td);
     }
     rpmtdFree(td);
     Py_RETURN_NONE;
