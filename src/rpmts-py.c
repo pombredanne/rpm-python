@@ -164,13 +164,6 @@ rpmts_AddInstall(rpmtsObject * s, PyObject * args, PyObject * kwds)
     	    &hdr_Type, &h, &key, &how))
 	return NULL;
 
-    {	PyObject * hObj = (PyObject *) h;
-	if (hObj->ob_type != &hdr_Type) {
-	    PyErr_SetString(PyExc_TypeError, "bad type for header argument");
-	    return NULL;
-	}
-    }
-
     debug("(%p,%p,%p,%s) ts %p\n", s, h, key, how, s->ts);
 
     if (how && strcmp(how, "u") && strcmp(how, "i")) {
