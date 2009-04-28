@@ -169,8 +169,8 @@ rpmfi_iternext(rpmfiObject * s)
 
     /* If more to do, return a new rpmfiFile object. */
     if (rpmfiNext(s->fi) >= 0) {
-	result = rpmfiFile_Wrap(s->fi);
-	s->cur = result;
+	s->cur = rpmfiFile_Wrap(s->fi);
+	result = (PyObject *) s->cur;
     } else {
 	s->cur = NULL;
     }
@@ -285,8 +285,14 @@ rpmfi_subscript(rpmfiObject * s, PyObject * key)
     }
 
     ix = (int) PyInt_AsLong(key);
-    rpmfiSetFX(s->fi, ix);
-    return PyString_FromString(rpmfiFN(s->fi));
+    /* manual bounds check as rpmfiSetFX() can return -1 on non-errors, ugh */
+    if (ix >= 0 && ix < rpmfiFC(s->fi)) {
+	rpmfiSetFX(s->fi, ix);
+	return (PyObject *) rpmfiFile_Wrap(s->fi);
+    } else {
+	PyErr_SetString(PyExc_IndexError, "index out of bounds");
+	return NULL;
+    }
 }
 
 static PyMappingMethods rpmfi_as_mapping = {
