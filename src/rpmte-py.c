@@ -205,20 +205,7 @@ rpmte_DS(rpmteObject * s, PyObject * args, PyObject * kwds)
 static PyObject *
 rpmte_FI(rpmteObject * s, PyObject * args, PyObject * kwds)
 {
-    PyObject * TagN = NULL;
-    rpmfi fi;
-    rpmTag tag;
-    char * kwlist[] = {"tag", NULL};
-
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O:FI", kwlist, &TagN))
-	return NULL;
-
-    tag = tagNumFromPyObject(TagN);
-    if (tag == RPMTAG_NOT_FOUND) {
-	return NULL;
-    }
-
-    fi = rpmteFI(s->te);
+    rpmfi fi = rpmteFI(s->te);
     if (fi == NULL) {
 	Py_RETURN_NONE;
     }
