@@ -18,6 +18,7 @@
 #include "rpmte-py.h"
 #include "rpmts-py.h"
 #include "rpmkeyring-py.h"
+#include "rpmfd-py.h"
 #include "rpmdebug-py.h"
 
 /** \ingroup python
@@ -489,17 +490,19 @@ static PyObject *
 rpmts_HdrFromFdno(rpmtsObject * s, PyObject * args, PyObject * kwds)
 {
     PyObject * result = NULL;
+    PyObject * fo = NULL;
     Header h;
     FD_t fd;
-    int fdno;
     rpmRC rpmrc;
     char * kwlist[] = {"fd", NULL};
 
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "i:HdrFromFdno", kwlist,
-	    &fdno))
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O:HdrFromFdno", kwlist,
+	    &fo))
     	return NULL;
 
-    fd = fdDup(fdno);
+    if ((fd = rpmFdFromPyObject(fo)) == NULL)
+	return NULL;
+
     rpmrc = rpmReadPackageFile(s->ts, fd, "rpmts_HdrFromFdno", &h);
     Fclose(fd);
 
