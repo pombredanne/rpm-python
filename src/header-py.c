@@ -633,7 +633,7 @@ PyObject * rpmReadHeaders (FD_t fd)
     Header h;
 
     if (!fd) {
-	PyErr_SetFromErrno(pyrpmError);
+	PyErr_SetFromErrno(PyExc_IOError);
 	return NULL;
     }
 
@@ -696,7 +696,7 @@ PyObject * rpmHeaderFromFile(PyObject * self, PyObject * args, PyObject *kwds)
     fd = Fopen(filespec, "r.fdio");
 
     if (!fd) {
-	PyErr_SetFromErrno(pyrpmError);
+	PyErr_SetFromErrnoWithFilename(PyExc_IOError, filespec);
 	return NULL;
     }
 
@@ -820,7 +820,7 @@ rpmSingleHeaderFromFD(PyObject * self, PyObject * args, PyObject * kwds)
     fd = fdDup(fileno);
 
     if (!fd) {
-	PyErr_SetFromErrno(pyrpmError);
+	PyErr_SetFromErrno(PyExc_IOError);
 	return NULL;
     }
 
