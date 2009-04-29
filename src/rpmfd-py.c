@@ -9,6 +9,8 @@ FD_t rpmFdFromPyObject(PyObject *obj)
     } else if (PyFile_Check(obj)) {
 	FILE *fp = PyFile_AsFile(obj);
 	fd = fdDup(fileno(fp));
+    } else if (PyString_Check(obj)) {
+	fd = Fopen(PyString_AsString(obj), "r.fdio");
     } else {
 	PyErr_SetString(PyExc_TypeError, "integer or file object expected");
 	return NULL;
