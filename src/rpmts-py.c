@@ -552,7 +552,7 @@ rpmts_HdrCheck(rpmtsObject * s, PyObject * args, PyObject * kwds)
 	Py_RETURN_NONE;
     }
     if (!PyString_Check(blob)) {
-	PyErr_SetString(pyrpmError, "hdrCheck takes a string of octets");
+	PyErr_SetString(TypeError, "string of octets expected");
 	return result;
     }
     uh = PyString_AsString(blob);
@@ -651,7 +651,7 @@ rpmts_PgpPrtPkts(rpmtsObject * s, PyObject * args, PyObject * kwds)
 	Py_RETURN_NONE;
     }
     if (!PyString_Check(blob)) {
-	PyErr_SetString(pyrpmError, "pgpPrtPkts takes a string of octets");
+	PyErr_SetString(TypeError, "string of octets expected");
 	return NULL;
     }
     pkt = (unsigned char *)PyString_AsString(blob);
@@ -683,7 +683,7 @@ rpmts_PgpImportPubkey(rpmtsObject * s, PyObject * args, PyObject * kwds)
 	Py_RETURN_NONE;
     }
     if (!PyString_Check(blob)) {
-	PyErr_SetString(pyrpmError, "PgpImportPubkey takes a string of octets");
+	PyErr_SetString(TypeError, "string of octets expected");
 	return NULL;
     }
     pkt = (unsigned char *)PyString_AsString(blob);
