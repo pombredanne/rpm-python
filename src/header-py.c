@@ -10,6 +10,7 @@
 #include "rpmds-py.h"
 #include "rpmfi-py.h"
 #include "rpmtd-py.h"
+#include "rpmfd-py.h"
 #include "rpmdebug-py.h"
 
 /** \ingroup python
@@ -666,14 +667,16 @@ PyObject * rpmReadHeaders (FD_t fd)
 PyObject * rpmHeaderFromFD(PyObject * self, PyObject * args, PyObject * kwds)
 {
     FD_t fd;
-    int fileno;
+    PyObject * fo;
     PyObject * list;
     char * kwlist[] = {"fd", NULL};
 
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "i", kwlist, &fileno))
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O", kwlist, &fo))
 	return NULL;
 
-    fd = fdDup(fileno);
+    if ((fd = rpmFdFromPyObject(fo)) == NULL) {
+	return NULL;
+    }
 
     list = rpmReadHeaders (fd);
     Fclose(fd);
@@ -773,22 +776,23 @@ PyObject *
 rpmMergeHeadersFromFD(PyObject * self, PyObject * args, PyObject * kwds)
 {
     FD_t fd;
-    int fileno;
+    PyObject * fo;
     PyObject * list;
     int rc;
     int matchTag;
     char * kwlist[] = {"list", "fd", "matchTag", NULL};
 
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "Oii", kwlist, &list,
-	    &fileno, &matchTag))
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "OOi", kwlist, &list,
+	    &fo, &matchTag))
 	return NULL;
 
     if (!PyList_Check(list)) {
 	PyErr_SetString(PyExc_TypeError, "first parameter must be a list");
 	return NULL;
     }
-
-    fd = fdDup(fileno);
+    if ((fd = rpmFdFromPyObject(fo)) == NULL) {
+	return NULL;
+    }
 
     rc = rpmMergeHeaders (list, fd, matchTag);
     Fclose(fd);
@@ -806,23 +810,20 @@ PyObject *
 rpmSingleHeaderFromFD(PyObject * self, PyObject * args, PyObject * kwds)
 {
     FD_t fd;
-    int fileno;
+    PyObject *fo = NULL;
     off_t offset;
     PyObject * tuple;
     Header h;
     char * kwlist[] = {"fd", NULL};
 
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "i", kwlist, &fileno))
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O", kwlist, &fo))
 	return NULL;
 
-    offset = lseek(fileno, 0, SEEK_CUR);
-
-    fd = fdDup(fileno);
-
-    if (!fd) {
-	PyErr_SetFromErrno(PyExc_IOError);
+    if ((fd = rpmFdFromPyObject(fo)) == NULL) {
 	return NULL;
     }
+
+    offset = Fseek(fd, 0, SEEK_CUR);
 
     Py_BEGIN_ALLOW_THREADS
     h = headerRead(fd, HEADER_MAGIC_YES);
