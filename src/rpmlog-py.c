@@ -37,7 +37,7 @@ static PyObject * rpmlog_setFile (PyObject * self, PyObject * args, PyObject *kw
 
     if (fop) {
 	if (!PyFile_Check(fop)) {
-	    PyErr_SetString(TypeError, "file object expected");
+	    PyErr_SetString(PyExc_TypeError, "file object expected");
 	    return NULL;
 	}
 	fp = PyFile_AsFile(fop);
