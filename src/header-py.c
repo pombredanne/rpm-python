@@ -312,6 +312,29 @@ hdr_dsOfHeader(PyObject * s)
 
     return rpmds_Wrap( rpmdsThis(hdrGetHeader(ho), tagN, Flags) );
 }
+
+static PyObject * hdr_write(hdrObject *self, PyObject *args, PyObject *kwds)
+{
+    PyObject *fo = NULL;
+    char *kwlist[] = { "file", "magic", NULL };
+    int magic = 1;
+    FD_t fd = NULL;
+
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O|i", kwlist, &fo, &magic)) {
+	return NULL;
+    }
+    if ((fd = rpmFdFromPyObject(fo)) == NULL) {
+	return NULL;
+    }
+
+    if (headerWrite(fd, hdrGetHeader(self), 
+		    magic ? HEADER_MAGIC_YES : HEADER_MAGIC_NO)) {
+	return PyErr_SetFromErrno(PyExc_IOError);
+    }
+    
+    Py_RETURN_NONE;
+}
+
 /**
  */
 static int hdr_compare(hdrObject * a, hdrObject * b)
@@ -348,6 +371,8 @@ static struct PyMethodDef hdr_methods[] = {
 	NULL},
     {"fiFromHeader",	(PyCFunction)hdr_fiFromHeader,	METH_VARARGS|METH_KEYWORDS,
 	NULL},
+    {"write",		(PyCFunction)hdr_write,		METH_VARARGS|METH_KEYWORDS,
+	NULL },
 
     {NULL,		NULL}		/* sentinel */
 };
