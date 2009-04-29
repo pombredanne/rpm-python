@@ -141,8 +141,6 @@ static PyMethodDef rpmModuleMethods[] = {
     { "checkSignals", (PyCFunction) checkSignals, METH_VARARGS,
         NULL },
 
-    { "headerLoad", (PyCFunction) hdrLoad, METH_VARARGS|METH_KEYWORDS,
-	NULL },
     { "mergeHeaderListFromFD", (PyCFunction) rpmMergeHeadersFromFD, METH_VARARGS|METH_KEYWORDS,
 	NULL },
     { "readHeaderListFromFD", (PyCFunction) rpmHeaderFromIO, METH_VARARGS|METH_KEYWORDS,

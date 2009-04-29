@@ -641,36 +641,6 @@ Header hdrGetHeader(hdrObject * s)
 
 /**
  */
-PyObject * hdrLoad(PyObject * self, PyObject * args, PyObject * kwds)
-{
-    PyObject * hdr;
-    char * obj;
-    Header h;
-    int len;
-    char * kwlist[] = {"headers", NULL};
-
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "s#", kwlist, &obj, &len))
-	return NULL;
-
-    /* copy is needed to avoid surprises from data swab in headerLoad(). */
-    h = headerCopyLoad(obj);
-    if (!h) {
-	if (errno == ENOMEM) {
-	    PyErr_SetString(PyExc_MemoryError, "out of memory");
-	} else {
-	    PyErr_SetString(pyrpmError, "bad header");
-	}
-	return NULL;
-    }
-
-    hdr = hdr_Wrap(h);
-    h = headerFree(h);	/* XXX ref held by hdr */
-
-    return hdr;
-}
-
-/**
- */
 PyObject * rpmReadHeaders (FD_t fd)
 {
     PyObject *list, *hdr;
