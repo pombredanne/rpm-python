@@ -664,7 +664,7 @@ PyObject * rpmReadHeaders (FD_t fd)
 
 /**
  */
-PyObject * rpmHeaderFromFD(PyObject * self, PyObject * args, PyObject * kwds)
+PyObject * rpmHeaderFromIO(PyObject * self, PyObject * args, PyObject * kwds)
 {
     FD_t fd;
     PyObject * fo;
@@ -675,31 +675,6 @@ PyObject * rpmHeaderFromFD(PyObject * self, PyObject * args, PyObject * kwds)
 	return NULL;
 
     if ((fd = rpmFdFromPyObject(fo)) == NULL) {
-	return NULL;
-    }
-
-    list = rpmReadHeaders (fd);
-    Fclose(fd);
-
-    return list;
-}
-
-/**
- */
-PyObject * rpmHeaderFromFile(PyObject * self, PyObject * args, PyObject *kwds)
-{
-    char * filespec;
-    FD_t fd;
-    PyObject * list;
-    char * kwlist[] = {"file", NULL};
-
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "s", kwlist, &filespec))
-	return NULL;
-
-    fd = Fopen(filespec, "r.fdio");
-
-    if (!fd) {
-	PyErr_SetFromErrnoWithFilename(PyExc_IOError, filespec);
 	return NULL;
     }
 
