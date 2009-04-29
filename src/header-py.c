@@ -185,23 +185,14 @@ static PyObject * hdrHasKey(hdrObject *self, PyObject *pytag)
 
 /** \ingroup py_c
  */
-static PyObject * hdrUnload(hdrObject * s, PyObject * args, PyObject *keywords)
+static PyObject * hdrUnload(hdrObject * s)
 {
     char * buf;
     PyObject * rc;
-    int len, legacy = 0;
+    int len;
     Header h;
-    static char *kwlist[] = { "legacyHeader", NULL};
-
-    if (!PyArg_ParseTupleAndKeywords(args, keywords, "|i", kwlist, &legacy))
-	return NULL;
 
     h = headerLink(s->h);
-    /* XXX this legacy switch is a hack, needs to be removed. */
-    if (legacy) {
-	h = headerCopy(s->h);	/* XXX strip region tags, etc */
-	headerFree(s->h);
-    }
     len = headerSizeof(h, 0);
     buf = headerUnload(h);
     h = headerFree(h);
@@ -344,7 +335,7 @@ static struct PyMethodDef hdr_methods[] = {
 	NULL },
     {"keys",		(PyCFunction) hdrKeyList,	METH_NOARGS,
 	NULL },
-    {"unload",		(PyCFunction) hdrUnload,	METH_VARARGS|METH_KEYWORDS,
+    {"unload",		(PyCFunction) hdrUnload,	METH_NOARGS,
 	NULL },
     {"format",		(PyCFunction) hdrFormat,	METH_VARARGS|METH_KEYWORDS,
 	NULL },
