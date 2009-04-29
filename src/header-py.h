@@ -19,6 +19,8 @@ extern PyTypeObject hdr_Type;
  */
 extern PyObject * pyrpmError;
 
+#define hdrObject_Check(v)	((v)->ob_type == &hdr_Type)
+
 PyObject * hdr_Wrap(Header h);
 
 Header hdrGetHeader(hdrObject * h);
