@@ -380,13 +380,40 @@ static struct PyMethodDef hdr_methods[] = {
 static PyObject *hdr_new(PyTypeObject *subtype,
 			 PyObject *args, PyObject *kwds)
 {
-    hdrObject *self = PyObject_New(hdrObject, &hdr_Type);
-    if (self == NULL) {
-	return PyErr_NoMemory();
+    PyObject *obj = NULL;
+    Header h = NULL;
+    char *kwlist[] = { "obj", NULL };
+
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "|O", kwlist, &obj)) {
+	return NULL;
     }
-    self->h = headerNew();
+
+    if (obj == NULL) {
+	h = headerNew();
+    } else if (hdrObject_Check(obj)) {
+	h = headerCopy(hdrGetHeader((hdrObject*) obj));
+    } else if (PyString_Check(obj)) {
+	h = headerCopyLoad(PyString_AsString(obj));
+    } else if (PyFile_Check(obj)) {
+	FD_t fd = rpmFdFromPyObject(obj);
+	if (fd == NULL) {
+	    return PyErr_SetFromErrno(PyExc_IOError);
+	}
+	Py_BEGIN_ALLOW_THREADS;
+	h = headerRead(fd, HEADER_MAGIC_YES);
+	Py_END_ALLOW_THREADS;
+	Fclose(fd);
+    } else {
+	PyErr_SetNone(PyExc_TypeError);
+	return NULL;
+    }
+
+    if (h == NULL) {
+	PyErr_SetString(pyrpmError, "bad header");
+	return NULL;
+    }
     
-    return (PyObject *)self;
+    return hdr_Wrap(h);
 }
 
 /** \ingroup py_c
