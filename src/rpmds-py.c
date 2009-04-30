@@ -203,19 +203,6 @@ rpmds_iternext(rpmdsObject * s)
 }
 
 static PyObject *
-rpmds_Next(rpmdsObject * s)
-{
-    PyObject * result;
-
-    result = rpmds_iternext(s);
-
-    if (result == NULL) {
-	Py_RETURN_NONE;
-    }
-    return result;
-}
-
-static PyObject *
 rpmds_SetNoPromote(rpmdsObject * s, PyObject * args, PyObject * kwds)
 {
     int nopromote;
@@ -326,9 +313,6 @@ static struct PyMethodDef rpmds_methods[] = {
 	"ds.Ix -> Ix		- Return current element index.\n" },
  {"BT",		(PyCFunction)rpmds_BT,		METH_NOARGS,
 	"ds.BT -> BT	- Return build time.\n" },
- {"next",	(PyCFunction)rpmds_Next,	METH_NOARGS,
-"ds.next() -> (N, EVR, Flags)\n\
-- Retrieve next dependency triple.\n" },
  {"SetNoPromote",(PyCFunction)rpmds_SetNoPromote, METH_VARARGS|METH_KEYWORDS,
 	NULL},
  {"Notify",	(PyCFunction)rpmds_Notify,	METH_VARARGS|METH_KEYWORDS,

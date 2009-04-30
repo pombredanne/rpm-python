@@ -78,21 +78,6 @@ rpmmi_iternext(rpmmiObject * s)
 /**
  */
 static PyObject *
-rpmmi_Next(rpmmiObject * s)
-{
-    PyObject * result;
-
-    result = rpmmi_iternext(s);
-
-    if (result == NULL) {
-	Py_RETURN_NONE;
-    }
-    return result;
-}
-
-/**
- */
-static PyObject *
 rpmmi_Instance(rpmmiObject * s)
 {
     int rc = 0;
@@ -143,9 +128,6 @@ rpmmi_Pattern(rpmmiObject * s, PyObject * args, PyObject * kwds)
 /** \ingroup py_c
  */
 static struct PyMethodDef rpmmi_methods[] = {
-    {"next",	    (PyCFunction) rpmmi_Next,		METH_NOARGS,
-"mi.next() -> hdr\n\
-- Retrieve next header that matches. Iterate directly in python if possible.\n" },
     {"instance",    (PyCFunction) rpmmi_Instance,	METH_NOARGS,
 	NULL },
     {"count",       (PyCFunction) rpmmi_Count,		METH_NOARGS,
