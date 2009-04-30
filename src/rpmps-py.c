@@ -150,13 +150,7 @@ static void rpmps_free(rpmpsObject * s)
  */
 static PyObject * rpmps_new(PyTypeObject * subtype, PyObject *args, PyObject *kwds)
 {
-    rpmpsObject * s = NULL;
-    char * kwlist[] = {NULL};
-
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, ":rpmps_init", kwlist))
-	return NULL;
-
-    s = PyObject_New(rpmpsObject, subtype);
+    rpmpsObject * s =  PyObject_New(rpmpsObject, subtype);
     if (s == NULL) {
 	return PyErr_NoMemory();
     }
