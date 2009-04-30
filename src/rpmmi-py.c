@@ -64,15 +64,6 @@
 /**
  */
 static PyObject *
-rpmmi_iter(PyObject * s)
-{
-    Py_INCREF(s);
-    return s;
-}
-
-/**
- */
-static PyObject *
 rpmmi_iternext(rpmmiObject * s)
 {
     Header h;
@@ -210,7 +201,7 @@ PyTypeObject rpmmi_Type = {
 	0,				/* tp_clear */
 	0,				/* tp_richcompare */
 	0,				/* tp_weaklistoffset */
-	rpmmi_iter,			/* tp_iter */
+	PyObject_SelfIter,		/* tp_iter */
 	(iternextfunc) rpmmi_iternext,	/* tp_iternext */
 	rpmmi_methods,			/* tp_methods */
 	0,				/* tp_members */

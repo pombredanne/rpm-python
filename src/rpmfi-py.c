@@ -152,13 +152,6 @@ rpmfiFile_Wrap(rpmfi fi)
 }
 
 static PyObject *
-rpmfi_iter(PyObject * s)
-{
-    Py_INCREF(s);
-    return s;
-}
-
-static PyObject *
 rpmfi_iternext(rpmfiObject * s)
 {
     PyObject * result = NULL;
@@ -379,7 +372,7 @@ PyTypeObject rpmfi_Type = {
 	0,				/* tp_clear */
 	0,				/* tp_richcompare */
 	0,				/* tp_weaklistoffset */
-	rpmfi_iter,			/* tp_iter */
+	PyObject_SelfIter,		/* tp_iter */
 	(iternextfunc) rpmfi_iternext,	/* tp_iternext */
 	rpmfi_methods,			/* tp_methods */
 	0,				/* tp_members */

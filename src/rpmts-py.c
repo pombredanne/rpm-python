@@ -925,15 +925,6 @@ rpmts_Run(rpmtsObject * s, PyObject * args, PyObject * kwds)
     return list;
 }
 
-static PyObject *
-rpmts_iter(rpmtsObject * s)
-{
-    debug("(%p) ts %p\n", s, s->ts);
-
-    Py_INCREF(s);
-    return (PyObject *)s;
-}
-
 /**
  * @todo Add TR_ADDED filter to iterator.
  */
@@ -1290,7 +1281,7 @@ PyTypeObject rpmts_Type = {
 	0,				/* tp_clear */
 	0,				/* tp_richcompare */
 	0,				/* tp_weaklistoffset */
-	(getiterfunc) rpmts_iter,	/* tp_iter */
+	PyObject_SelfIter,		/* tp_iter */
 	(iternextfunc) rpmts_iternext,	/* tp_iternext */
 	rpmts_methods,			/* tp_methods */
 	0,				/* tp_members */

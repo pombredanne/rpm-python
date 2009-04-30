@@ -26,15 +26,6 @@ rpmps_append(rpmpsObject * s, PyObject * value)
 }
 
 static PyObject *
-rpmps_iter(rpmpsObject * s)
-{
-    debug("(%p)\n", s);
-    s->psi = rpmpsInitIterator(s->ps);
-    Py_INCREF(s);
-    return (PyObject *)s;
-}
-
-static PyObject *
 rpmps_iternext(rpmpsObject * s)
 {
     PyObject * result = NULL;
@@ -195,7 +186,7 @@ PyTypeObject rpmps_Type = {
 	0,				/* tp_clear */
 	(richcmpfunc)0,			/* tp_richcompare */
 	0,				/* tp_weaklistoffset */
-	(getiterfunc) rpmps_iter,	/* tp_iter */
+	PyObject_SelfIter,		/* tp_iter */
 	(iternextfunc) rpmps_iternext,	/* tp_iternext */
 	rpmps_methods,			/* tp_methods */
 	0,				/* tp_members */

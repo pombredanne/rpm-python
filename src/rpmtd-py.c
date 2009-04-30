@@ -19,12 +19,6 @@
  * \name Class: Rpmtd
  */
 
-static PyObject *rpmtd_iter(PyObject *self)
-{
-    Py_INCREF(self);
-    return self;
-}
-
 static PyObject *rpmtd_iternext(rpmtdObject *self)
 {
     PyObject *next = NULL;
@@ -225,7 +219,7 @@ PyTypeObject rpmtd_Type = {
 	0,				/* tp_clear */
 	0,				/* tp_richcompare */
 	0,				/* tp_weaklistoffset */
-	(getiterfunc) rpmtd_iter,	/* tp_iter */
+	PyObject_SelfIter,		/* tp_iter */
 	(iternextfunc) rpmtd_iternext,	/* tp_iternext */
 	rpmtd_methods,			/* tp_methods */
 	0,				/* tp_members */

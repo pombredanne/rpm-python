@@ -176,13 +176,6 @@ rpmds_richcompare(rpmdsObject * a, rpmdsObject * b, int op)
 }
 
 static PyObject *
-rpmds_iter(PyObject * s)
-{
-    Py_INCREF(s);
-    return s;
-}
-
-static PyObject *
 rpmds_iternext(rpmdsObject * s)
 {
     PyObject * result = NULL;
@@ -499,7 +492,7 @@ PyTypeObject rpmds_Type = {
 	0,				/* tp_clear */
 	(richcmpfunc) rpmds_richcompare,/* tp_richcompare */
 	0,				/* tp_weaklistoffset */
-	rpmds_iter,			/* tp_iter */
+	PyObject_SelfIter,		/* tp_iter */
 	(iternextfunc) rpmds_iternext,	/* tp_iternext */
 	rpmds_methods,			/* tp_methods */
 	0,				/* tp_members */
