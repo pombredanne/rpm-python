@@ -952,25 +952,6 @@ rpmts_iternext(rpmtsObject * s)
     return result;
 }
 
-/**
- * @todo Add TR_ADDED filter to iterator.
- */
-static PyObject *
-rpmts_Next(rpmtsObject * s)
-{
-    PyObject * result;
-
-    debug("(%p) ts %p\n", s, s->ts);
-
-    result = rpmts_iternext(s);
-
-    if (result == NULL) {
-	Py_RETURN_NONE;
-    }
-
-    return result;
-}
-
 static PyObject *rpmts_setKeyring(rpmtsObject *self, 
 				  PyObject *args, PyObject *kwds)
 {
@@ -1134,9 +1115,6 @@ static struct PyMethodDef rpmts_methods[] = {
  {"dbMatch",	(PyCFunction) rpmts_Match,	METH_VARARGS|METH_KEYWORDS,
 "ts.dbMatch([TagN, [key, [len]]]) -> mi\n\
 - Create a match iterator for the default transaction rpmdb.\n" },
- {"next",		(PyCFunction)rpmts_Next,	METH_NOARGS,
-"ts.next() -> te\n\
-- Retrieve next transaction set element.\n" },
  {"setKeyring",(PyCFunction) rpmts_setKeyring,	METH_VARARGS|METH_KEYWORDS,
 	NULL },
  {"getKeyring",(PyCFunction) rpmts_getKeyring,	METH_VARARGS|METH_KEYWORDS,
