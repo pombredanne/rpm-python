@@ -194,53 +194,50 @@ static PyObject *
 rpmts_AddErase(rpmtsObject * s, PyObject * args, PyObject * kwds)
 {
     PyObject * o;
-    int count;
-    rpmdbMatchIterator mi;
-    char * kwlist[] = {"name", NULL};
+    int installed = 0;
+    rpmdbMatchIterator mi = NULL;
+    Header h = NULL, oh = NULL;
+    char * kwlist[] = {"obj", NULL};
 
     debug("(%p) ts %p\n", s, s->ts);
 
     if (!PyArg_ParseTupleAndKeywords(args, kwds, "O:AddErase", kwlist, &o))
         return NULL;
 
-    if (PyString_Check(o)) {
+    /* if we get an installed header then this is simple... */
+    if (hdrObject_Check(o)) {
+	h = hdrGetHeader((hdrObject*) o);
+	if ((installed = headerGetInstance(h)) > 0) {
+	    rpmtsAddEraseElement(s->ts, h, -1);
+	    Py_RETURN_NONE;
+	}
+    /* ... otherwise we need to muck with db iterators */
+    } else if (PyString_Check(o)) {
 	char * name = PyString_AsString(o);
-
 	mi = rpmtsInitIterator(s->ts, RPMDBI_LABEL, name, 0);
-	count = rpmdbGetIteratorCount(mi);
-	if (count <= 0) {
-	    mi = rpmdbFreeIterator(mi);
-	    PyErr_SetString(pyrpmError, "package not installed");
-	    return NULL;
-	} else { /* XXX: Note that we automatically choose to remove all matches */
-	    Header h;
-	    while ((h = rpmdbNextIterator(mi)) != NULL) {
-		unsigned int recOffset = rpmdbGetIteratorOffset(mi);
-		if (recOffset)
-		    rpmtsAddEraseElement(s->ts, h, recOffset);
-	    }
-	}
-	mi = rpmdbFreeIterator(mi);
-    } else
-    if (PyInt_Check(o)) {
-	uint32_t instance = PyInt_AsLong(o);
-
-	mi = rpmtsInitIterator(s->ts, RPMDBI_PACKAGES, &instance, sizeof(instance));
-	if (instance == 0 || mi == NULL) {
-	    mi = rpmdbFreeIterator(mi);
-	    PyErr_SetString(pyrpmError, "package not installed");
-	    return NULL;
-	} else {
-	    Header h;
-	    while ((h = rpmdbNextIterator(mi)) != NULL) {
-		uint32_t recOffset = rpmdbGetIteratorOffset(mi);
-		if (recOffset)
-		    rpmtsAddEraseElement(s->ts, h, recOffset);
-		break;
-	    }
-	}
-	mi = rpmdbFreeIterator(mi);
+	installed = (mi && rpmdbGetIteratorCount(mi) > 1);
+    } else if (PyInt_Check(o)) {
+	uint32_t recno = PyInt_AsLong(o);
+	mi = rpmtsInitIterator(s->ts, RPMDBI_PACKAGES, &recno, sizeof(recno));
+	installed = (mi && recno > 0);
+    } else {
+	PyErr_SetString(PyExc_TypeError, "header, string or integer expected");
+	return NULL;
     }
+
+    if (!installed) {
+	mi = rpmdbFreeIterator(mi);
+	PyErr_SetString(pyrpmError, "package not installed");
+	return NULL;
+    } 
+
+    /* mi on recno never terminates, work around for now */
+    while ((h = rpmdbNextIterator(mi)) != NULL) {
+	rpmtsAddEraseElement(s->ts, h, -1);
+	if (h == oh) break;
+	oh = h;
+    }
+    mi = rpmdbFreeIterator(mi);
 
     Py_RETURN_NONE;
 }
