@@ -3,6 +3,11 @@
 
 #include "rpmfd-py.h"
 
+static FD_t fdGetFd(rpmfdObject *fdo)
+{
+    return fdo->fd;
+}
+
 FD_t rpmFdFromPyObject(PyObject *obj)
 {
     FD_t fd = NULL;
@@ -14,6 +19,8 @@ FD_t rpmFdFromPyObject(PyObject *obj)
 	fd = fdDup(fileno(fp));
     } else if (PyString_Check(obj)) {
 	fd = Fopen(PyString_AsString(obj), "r.fdio");
+    } else if (PyObject_TypeCheck(obj, &rpmfd_Type)) {
+	fd = fdGetFd((rpmfdObject*) obj);
     } else {
 	PyErr_SetString(PyExc_TypeError, "integer or file object expected");
 	return NULL;
