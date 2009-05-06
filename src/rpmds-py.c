@@ -426,7 +426,12 @@ static PyObject * rpmds_new(PyTypeObject * subtype, PyObject *args, PyObject *kw
 	    ds = rpmdsSingle(tagN, n, evr, flags);
 	}
     } else if (hdrObject_Check(po)) {
-	ds = rpmdsNew(hdrGetHeader((hdrObject*) po), tagN, flags);
+	Header h = hdrGetHeader((hdrObject*) po);
+	if (tagN == RPMTAG_NAME) {
+	    ds = rpmdsThis(h, RPMTAG_PROVIDENAME, RPMSENSE_EQUAL);
+	} else {
+	    ds = rpmdsNew(h, tagN, flags);
+	}
     } 
 
     if (ds == NULL) {
