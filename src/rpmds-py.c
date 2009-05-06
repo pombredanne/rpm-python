@@ -369,6 +369,7 @@ static PyObject *
 rpmds_subscript(rpmdsObject * s, PyObject * key)
 {
     int ix;
+    rpmdsDepObject *dso = NULL;
 
     if (!PyInt_Check(key)) {
 	PyErr_SetString(PyExc_TypeError, "integer expected");
@@ -376,10 +377,17 @@ rpmds_subscript(rpmdsObject * s, PyObject * key)
     }
 
     ix = (int) PyInt_AsLong(key);
-    /* XXX make sure that DNEVR exists. */
-    rpmdsSetIx(s->ds, ix-1);
-    (void) rpmdsNext(s->ds);
-    return PyString_FromString(rpmdsDNEVR(s->ds));
+    if (ix >= 0 && ix < rpmdsCount(s->ds)) {
+	/* XXX work around rpmds brokenness, fix this junk in rpm... */
+	rpmdsSetIx(s->ds, ix-1);
+	if (rpmdsNext(s->ds) >= 0) {
+	    dso = rpmdsDep_Wrap(s->ds);
+	}
+    } 
+    if (dso == NULL) {
+	PyErr_SetString(PyExc_IndexError, "index out of bounds");
+    }
+    return (PyObject*) dso;
 }
 
 static PyMappingMethods rpmds_as_mapping = {
