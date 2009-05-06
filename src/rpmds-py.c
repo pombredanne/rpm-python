@@ -175,6 +175,16 @@ rpmds_richcompare(rpmdsObject * a, rpmdsObject * b, int op)
     return Py_BuildValue("i", rc);
 }
 
+static rpmdsDepObject * rpmdsDep_Wrap(rpmds ds)
+{
+    rpmdsDepObject *dso = PyObject_New(rpmdsDepObject, &rpmdsDep_Type);
+    if (dso == NULL) {
+	return PyErr_NoMemory();
+    }
+    dso->ds = ds;
+    return dso;
+}
+
 static PyObject *
 rpmds_iternext(rpmdsObject * s)
 {
@@ -189,12 +199,8 @@ rpmds_iternext(rpmdsObject * s)
 
     /* If more to do, return a (N, EVR, Flags) tuple. */
     if (rpmdsNext(s->ds) >= 0) {
-	s->cur = PyObject_New(rpmdsDepObject, &rpmdsDep_Type);
-	if (s->cur == NULL) {
-	    return PyErr_NoMemory();
-	}
-	s->cur->ds = s->ds;
-	result = (PyObject *) s->cur;
+	s->cur = rpmdsDep_Wrap(s->ds);
+	result = (PyObject*) s->cur;
     } else {
 	s->cur = NULL;
     }
