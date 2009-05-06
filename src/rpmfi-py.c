@@ -74,7 +74,6 @@ rpmfiFile_FState(rpmfiFileObject * s)
     return Py_BuildValue("i", rpmfiFState(s->fi));
 }
 
-/* XXX rpmfiMD5 */
 static PyObject *
 rpmfiFile_Digest(rpmfiFileObject * s)
 {
@@ -188,8 +187,6 @@ static struct PyMethodDef rpmfiFile_methods[] = {
  {"FMode",	(PyCFunction)rpmfiFile_FMode,	METH_NOARGS,
 	NULL},
  {"FState",	(PyCFunction)rpmfiFile_FState,	METH_NOARGS,
-	NULL},
- {"MD5",	(PyCFunction)rpmfiFile_Digest,		METH_NOARGS,
 	NULL},
  {"Digest",	(PyCFunction)rpmfiFile_Digest,		METH_NOARGS,
 	NULL},
