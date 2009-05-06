@@ -387,7 +387,7 @@ PyTypeObject rpmfiFile_Type = {
 	0,				/* tp_as_mapping */
 	(hashfunc)0,			/* tp_hash */
 	(ternaryfunc)0,			/* tp_call */
-	(reprfunc)0,			/* tp_str */
+	(reprfunc)rpmfiFile_FN,		/* tp_str */
 	PyObject_GenericGetAttr,	/* tp_getattro */
 	PyObject_GenericSetAttr,	/* tp_setattro */
 	0,				/* tp_as_buffer */
