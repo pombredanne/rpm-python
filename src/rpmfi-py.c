@@ -174,11 +174,11 @@ rpmfi_iternext(rpmfiObject * s)
 }
 
 static struct PyMethodDef rpmfiFile_methods[] = {
- {"BN",		(PyCFunction)rpmfiFile_BN,		METH_NOARGS,
+ {"BN",		(PyCFunction)rpmfiFile_BN,	METH_NOARGS,
 	NULL},
- {"DN",		(PyCFunction)rpmfiFile_DN,		METH_NOARGS,
+ {"DN",		(PyCFunction)rpmfiFile_DN,	METH_NOARGS,
 	NULL},
- {"FN",		(PyCFunction)rpmfiFile_FN,		METH_NOARGS,
+ {"FN",		(PyCFunction)rpmfiFile_FN,	METH_NOARGS,
 	NULL},
  {"FFlags",	(PyCFunction)rpmfiFile_FFlags,	METH_NOARGS,
 	NULL},
@@ -188,7 +188,7 @@ static struct PyMethodDef rpmfiFile_methods[] = {
 	NULL},
  {"FState",	(PyCFunction)rpmfiFile_FState,	METH_NOARGS,
 	NULL},
- {"Digest",	(PyCFunction)rpmfiFile_Digest,		METH_NOARGS,
+ {"Digest",	(PyCFunction)rpmfiFile_Digest,	METH_NOARGS,
 	NULL},
  {"FLink",	(PyCFunction)rpmfiFile_FLink,	METH_NOARGS,
 	NULL},
