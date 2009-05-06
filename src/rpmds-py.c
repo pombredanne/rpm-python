@@ -403,33 +403,38 @@ static void rpmds_free(rpmdsObject * s)
  */
 static PyObject * rpmds_new(PyTypeObject * subtype, PyObject *args, PyObject *kwds)
 {
-    rpmdsObject * s = NULL;
-    hdrObject * ho = NULL;
+    PyObject * po = NULL;
     PyObject * to = NULL;
     rpmTag tagN = RPMTAG_REQUIRENAME;
-    rpmsenseFlags flags = 0;
-    char * kwlist[] = {"header", "tag", "flags", NULL};
+    rpmsenseFlags flags = RPMSENSE_ANY;
+    rpmds ds = NULL;
+    char * kwlist[] = {"obj", "tag", "flags", NULL};
 
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O!|Oi:rpmds_init", kwlist, 
-	    &hdr_Type, &ho, &to, &flags))
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O|Oi:rpmds_init", kwlist, 
+				     &po, &to, &flags)) {
 	return NULL;
+    }
 
-    if (to != NULL) {
-	tagN = tagNumFromPyObject(to);
-	if (tagN == RPMTAG_NOT_FOUND) {
-	    return NULL;
+    if (to != NULL && (tagN = tagNumFromPyObject(to)) == RPMTAG_NOT_FOUND) {
+	return NULL;
+    }
+
+    if (PyTuple_Check(po) && PyTuple_Size(po) == 2) {
+	char *n = PyString_AsString(PyTuple_GetItem(po, 0));
+	char *evr = PyString_AsString(PyTuple_GetItem(po, 1));
+	if (n && evr) {
+	    ds = rpmdsSingle(tagN, n, evr, flags);
 	}
-    }
-    s = PyObject_New(rpmdsObject, subtype);
-    if (s == NULL) {
-	return PyErr_NoMemory();
-    }
-    s->ds = rpmdsNew(hdrGetHeader(ho), tagN, flags);
-    s->cur = NULL;
+    } else if (hdrObject_Check(po)) {
+	ds = rpmdsNew(hdrGetHeader((hdrObject*) po), tagN, flags);
+    } 
 
-    debug("%p ++ ds %p\n", s, s->ds);
+    if (ds == NULL) {
+	PyErr_SetString(PyExc_TypeError, "(n,evr) tuple or header expected");
+	return NULL;
+    }
 
-    return (PyObject *)s;
+    return rpmds_Wrap(ds);;
 }
 
 /**
@@ -556,27 +561,3 @@ rpmds_Wrap(rpmds ds)
     s->cur = NULL;
     return (PyObject*) s;
 }
-
-PyObject *
-rpmds_Single(PyObject * s, PyObject * args, PyObject * kwds)
-{
-    PyObject * to = NULL;
-    rpmTag tagN = RPMTAG_PROVIDENAME;
-    const char * N;
-    const char * EVR = NULL;
-    rpmsenseFlags Flags = 0;
-    char * kwlist[] = {"to", "name", "evr", "flags", NULL};
-
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "Os|si:Single", kwlist,
-	    &to, &N, &EVR, &Flags))
-	return NULL;
-
-    if (to != NULL) {
-	tagN = tagNumFromPyObject(to);
-	if (tagN == RPMTAG_NOT_FOUND) {
-	    return NULL;
-	}
-    }
-    return rpmds_Wrap( rpmdsSingle(tagN, N, EVR, Flags) );
-}
-
