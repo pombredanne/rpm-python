@@ -239,19 +239,10 @@ static struct PyMethodDef rpmte_methods[] = {
 
 /* ---------- */
 
-static int
-rpmte_print(rpmteObject * s, FILE * fp, int flags)
+static PyObject *rpmte_str(rpmteObject * s)
 {
-    const char * tstr;
-    if (!(s && s->te))
-	return -1;
-    switch (rpmteType(s->te)) {
-    case TR_ADDED:	tstr = "++";	break;
-    case TR_REMOVED:	tstr = "--";	break;
-    default:		tstr = "??";	break;
-    }
-    fprintf(fp, "%s %s", tstr, rpmteNEVRA(s->te));
-    return 0;
+    const char *type = (rpmteType(s->te) == TR_ADDED) ? "++" : "--";
+    return PyString_FromFormat("%s %s", type, rpmteNEVRA(s->te));
 }
 
 /**
@@ -268,7 +259,7 @@ PyTypeObject rpmte_Type = {
 	sizeof(rpmteObject),		/* tp_size */
 	0,				/* tp_itemsize */
 	(destructor)0,		 	/* tp_dealloc */
-	(printfunc) rpmte_print,	/* tp_print */
+	(printfunc)0,			/* tp_print */
 	(getattrfunc)0,		 	/* tp_getattr */
 	(setattrfunc)0,			/* tp_setattr */
 	0,				/* tp_compare */
@@ -278,7 +269,7 @@ PyTypeObject rpmte_Type = {
 	0,				/* tp_as_mapping */
 	0,				/* tp_hash */
 	0,				/* tp_call */
-	0,				/* tp_str */
+	(reprfunc)rpmte_str,		/* tp_str */
 	PyObject_GenericGetAttr,        /* tp_getattro */
 	PyObject_GenericSetAttr,        /* tp_setattro */
 	0,				/* tp_as_buffer */
